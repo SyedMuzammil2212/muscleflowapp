@@ -1,3 +1,4 @@
+import WhiteButton from "@/components/WhiteButton";
 import { useState } from "react";
 import {
     Keyboard,
@@ -7,7 +8,7 @@ import {
     Text,
     TextInput,
     TouchableWithoutFeedback,
-    View,
+    View
 } from "react-native";
 
 export default function LoginScreen() {
@@ -30,22 +31,29 @@ export default function LoginScreen() {
                         </View>
                     </View>
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        placeholderTextColor="#888"
-                        value={email}
-                        onChangeText={setEmail}
-                    />
+                    <View style={{ width: "100%", alignItems: "center", rowGap: 6, marginTop: 40 }}>
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        placeholderTextColor="#888"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                    />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            placeholderTextColor="#888"
+                            value={email}
+                            onChangeText={setEmail}
+                        />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Password"
+                            placeholderTextColor="#888"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
+                    </View>
+                    <View style={{ width: "100%", justifyContent: "center", alignItems: "center", marginTop: 40 }}>
+                        <WhiteButton text="Log In" />
+                    </View>
                 </View>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
@@ -53,6 +61,20 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+
+    loginButton: {
+        width: "80%",
+        height: 50,
+        borderWidth: 1,
+        borderColor: "gray",
+        borderRadius: 10,
+        paddingHorizontal: 15,
+        color: "#000",
+        backgroundColor: "#ffffff",
+        marginTop: 15,
+        justifyContent: "center",
+        alignItems: "center",
+    },
 
     tagLine: {
         flexDirection: "row",
