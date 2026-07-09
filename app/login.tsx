@@ -85,16 +85,16 @@ export default function LoginScreen() {
                                     <View style={{ rowGap: 0, alignItems: "center" }}>
                                         <Text style={styles.heading}>Muscleflow</Text>
                                         <View style={styles.tagLine}>
-                                            <Text style={styles.taglineText}>Discipline</Text>
-                                            <Text style={styles.taglineText}>Authority</Text>
-                                            <Text style={styles.taglineText}>Precision</Text>
+                                            <Text style={styles.taglineText}>DISCIPLINE  .</Text>
+                                            <Text style={styles.taglineText}>AUTHORITY  .</Text>
+                                            <Text style={styles.taglineText}>PRECISION</Text>
                                         </View>
                                     </View>
 
                                     <View style={{ width: "100%", alignItems: "center", justifyContent: "center", rowGap: 6, marginTop: 40 }}>
 
                                         <View style={{ width: "100%", justifyContent: "flex-start", alignItems: "center" }} >
-                                            <Text style={{ color: "#e9e9e9ff", width: "80%", fontWeight: 700, fontSize: 16 }}>Email</Text>
+                                            <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>EMAIL</Text>
                                             <TextInput
                                                 style={styles.input}
                                                 placeholder="Email"
@@ -105,7 +105,7 @@ export default function LoginScreen() {
                                         </View>
 
                                         <View style={{ width: "100%", justifyContent: "flex-start", alignItems: "center", marginTop: 15 }} >
-                                            <Text style={{ color: "#e9e9e9ff", width: "80%", fontWeight: 700, fontSize: 16 }}>Password</Text>
+                                            <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>PASSWORD</Text>
                                             <TextInput
                                                 style={styles.input}
                                                 placeholder="Password"
@@ -120,9 +120,9 @@ export default function LoginScreen() {
                                         <WhiteButton onPress={handleLogin} text="Log In" />
                                     </View>
                                     <View style={{ alignItems: "center", justifyContent: "center", marginTop: 40, rowGap: 10 }}>
-                                        <Text style={{ fontSize: 16, color: "#e9e9e9ff" }}> Forgot Password</Text>
+                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Forgot Password</Text>
                                         <View style={{ width: 80, height: 2, backgroundColor: "#b2b2b2ff" }} ></View>
-                                        <Text style={{ fontSize: 16, color: "#e9e9e9ff" }}> Don't Have an account? <Text style={{ color: "#ffffff", fontWeight: 700 }}>Sign Up</Text></Text>
+                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Don't Have an account? <Text style={{ color: "#F8C61E", fontWeight: 800 }}>Sign Up</Text></Text>
                                     </View>
                                 </View>
                             </KeyboardAvoidingView>
@@ -160,12 +160,12 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     taglineText: {
-        color: "#ffffff",
-        fontSize: 16,
+        color: "#D2C5AC",
+        fontSize: 14,
     },
     mainContainer: {
         flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        backgroundColor: "rgba(13, 20, 30, 0.6)",
     },
 
     container: {
@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     },
 
     heading: {
-        color: "#fff",
-        fontSize: 30,
+        color: "#F8C61E",
+        fontSize: 36,
         fontWeight: "bold",
         marginBottom: 20,
     },
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
         width: "80%",
         height: 50,
         borderWidth: 1,
-        borderColor: "gray",
+        borderColor: "#9A9079",
         borderRadius: 6,
         paddingHorizontal: 15,
         color: "#fff",

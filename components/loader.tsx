@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         height: "100%",
-        backgroundColor: "#000000ff"
+        backgroundColor: "#0D141E"
     },
 
     loader: {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 25,
         borderWidth: 8,
-        borderColor: "#ffffffff",          // Your brand color
+        borderColor: "#F8C61E",          // Your brand color
         borderTopColor: "transparent",   // Creates the gap
     },
 });

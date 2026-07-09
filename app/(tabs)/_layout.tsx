@@ -7,6 +7,7 @@ import ProfileIcon from '@/assets/icons/profile';
 import WorkoutIcon from '@/assets/icons/workout';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
+import { AuthProvider } from '@/components/userContext';
 import * as Haptics from "expo-haptics";
 import { Pressable, Text, View } from 'react-native';
 
@@ -22,182 +23,184 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: "#ffffff",
-        tabBarInactiveTintColor: "#9a9a9aff",
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
-        },
-        tabBarStyle: {
-          backgroundColor: "#111",
-          paddingTop: 6,
-          paddingBottom: 20,
-          borderTopWidth: 1,
-          borderTopColor: "grey",
-          height: "12%"
-        },
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          headerShown: false,
+    <AuthProvider>
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: "#F8C61EF8C61E",
+          tabBarInactiveTintColor: "#D2C5ACff",
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: "600",
+          },
+          tabBarStyle: {
+            backgroundColor: "#19202B",
+            paddingTop: 6,
+            paddingBottom: 20,
+            borderTopWidth: 1,
+            borderTopColor: "#4E4633",
+            height: "12%"
+          },
+          // Disable the static render of the header on web
+          // to prevent a hydration error in React Navigation v6.
+          headerShown: useClientOnlyValue(false, true),
+        }}>
+        <Tabs.Screen
+          name="index"
+          options={{
+            headerShown: false,
 
-          tabBarButton: (props) => {
-            const focused = props["aria-selected"];
+            tabBarButton: (props) => {
+              const focused = props["aria-selected"];
 
-            return (
-              <Pressable
-                onPress={async (e) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); props?.onPress?.(e) }}
-                onLongPress={props?.onLongPress}
-                style={{
-                  flex: 1,
-                  marginHorizontal: 8,
-                  marginVertical: 8,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <View
+              return (
+                <Pressable
+                  onPress={async (e) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); props?.onPress?.(e) }}
+                  onLongPress={props?.onLongPress}
                   style={{
                     flex: 1,
-                    justifyContent: "center",
+                    marginHorizontal: 8,
+                    marginVertical: 8,
                     alignItems: "center",
-                    height: "50%",
-                    borderRadius: 18,
-                    width: "80%",
-                    backgroundColor: focused ? "#4A4A4A" : "transparent",
+                    justifyContent: "center"
                   }}
                 >
-                  <WorkoutIcon
-                    width={28}
-                    height={28}
-                    color={focused ? "#FFF" : "#9A9A9A"}
-                  />
-
-                  <Text
+                  <View
                     style={{
-                      color: focused ? "#FFF" : "#9A9A9A",
-                      marginTop: 3,
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "50%",
+                      borderRadius: 18,
+                      width: "80%",
+                      backgroundColor: focused ? "#3F4A5B" : "transparent",
                     }}
                   >
-                    Workout
-                  </Text>
-                </View>
-              </Pressable>
-            );
-          },
-        }}
-      />
+                    <WorkoutIcon
+                      width={28}
+                      height={28}
+                      color={focused ? "#F8C61E" : "#D2C5AC"}
+                    />
+
+                    <Text
+                      style={{
+                        color: focused ? "#F8C61E" : "#D2C5AC",
+                        marginTop: 3,
+                      }}
+                    >
+                      Workout
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            },
+          }}
+        />
 
 
-      <Tabs.Screen
-        name="two"
-        options={{
-          headerShown: false,
-          tabBarButton: (props) => {
-            const focused = props["aria-selected"];
+        <Tabs.Screen
+          name="two"
+          options={{
+            headerShown: false,
+            tabBarButton: (props) => {
+              const focused = props["aria-selected"];
 
-            return (
-              <Pressable
-                onPress={async (e) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); props?.onPress?.(e) }}
-                onLongPress={props?.onLongPress}
-                style={{
-                  flex: 1,
-                  marginHorizontal: 8,
-                  marginVertical: 8,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <View
+              return (
+                <Pressable
+                  onPress={async (e) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); props?.onPress?.(e) }}
+                  onLongPress={props?.onLongPress}
                   style={{
                     flex: 1,
-                    justifyContent: "center",
+                    marginHorizontal: 8,
+                    marginVertical: 8,
                     alignItems: "center",
-                    height: "50%",
-                    borderRadius: 18,
-                    width: "80%",
-                    backgroundColor: focused ? "#4A4A4A" : "transparent",
+                    justifyContent: "center"
                   }}
                 >
-                  <HistoryIcon
-                    width={28}
-                    height={28}
-                    color={focused ? "#FFF" : "#9A9A9A"}
-                  />
-
-
-                  <Text
+                  <View
                     style={{
-                      color: focused ? "#FFF" : "#9A9A9A",
-                      marginTop: 6,
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "50%",
+                      borderRadius: 18,
+                      width: "80%",
+                      backgroundColor: focused ? "#3F4A5B" : "transparent",
                     }}
                   >
-                    History
-                  </Text>
-                </View>
-              </Pressable>
-            );
-          },
-        }}
-      />
+                    <HistoryIcon
+                      width={28}
+                      height={28}
+                      color={focused ? "#F8C61E" : "#D2C5AC"}
+                    />
 
 
-      <Tabs.Screen
-        name="three"
-        options={{
-          headerShown: false,
-          tabBarButton: (props) => {
-            const focused = props["aria-selected"];
+                    <Text
+                      style={{
+                        color: focused ? "#F8C61E" : "#D2C5AC",
+                        marginTop: 6,
+                      }}
+                    >
+                      History
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            },
+          }}
+        />
 
-            return (
-              <Pressable
-                onPress={async (e) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); props?.onPress?.(e) }}
-                onLongPress={props?.onLongPress}
-                style={{
-                  flex: 1,
-                  marginHorizontal: 8,
-                  marginVertical: 8,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <View
+
+        <Tabs.Screen
+          name="three"
+          options={{
+            headerShown: false,
+            tabBarButton: (props) => {
+              const focused = props["aria-selected"];
+
+              return (
+                <Pressable
+                  onPress={async (e) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); props?.onPress?.(e) }}
+                  onLongPress={props?.onLongPress}
                   style={{
                     flex: 1,
-                    justifyContent: "center",
+                    marginHorizontal: 8,
+                    marginVertical: 8,
                     alignItems: "center",
-                    height: "50%",
-                    borderRadius: 18,
-                    width: "80%",
-                    backgroundColor: focused ? "#4A4A4A" : "transparent",
+                    justifyContent: "center"
                   }}
                 >
-                  <ProfileIcon
-                    width={28}
-                    height={28}
-                    color={focused ? "#FFF" : "#9A9A9A"}
-                  />
-
-                  <Text
+                  <View
                     style={{
-                      color: focused ? "#FFF" : "#9A9A9A",
-                      marginTop: 6,
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "50%",
+                      borderRadius: 18,
+                      width: "80%",
+                      backgroundColor: focused ? "#3F4A5B" : "transparent",
                     }}
                   >
-                    Profile
-                  </Text>
-                </View>
-              </Pressable>
-            );
-          },
-        }}
-      />
-    </Tabs>
+                    <ProfileIcon
+                      width={28}
+                      height={28}
+                      color={focused ? "#F8C61E" : "#D2C5AC"}
+                    />
+
+                    <Text
+                      style={{
+                        color: focused ? "#F8C61E" : "#D2C5AC",
+                        marginTop: 6,
+                      }}
+                    >
+                      Profile
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            },
+          }}
+        />
+      </Tabs>
+    </AuthProvider>
   );
 }

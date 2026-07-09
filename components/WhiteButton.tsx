@@ -15,8 +15,8 @@ export default function WhiteButton({ text, onPress }: WhiteButtonProps) {
                     opacity: pressed ? 0.9 : 1,
                 },
             ]}>
-                <Lightning color="black" />
-                <Text style={{ color: "#000", fontSize: 20, fontWeight: "bold" }}>{text}</Text>
+                <Lightning color="#3D2E00" />
+                <Text style={{ color: "#3D2E00", fontSize: 20, fontWeight: "bold" }}>{text}</Text>
 
             </Pressable>
         </View>
@@ -31,12 +31,10 @@ const styles = StyleSheet.create({
         columnGap: 10,
         width: "80%",
         height: 50,
-        borderWidth: 1,
-        borderColor: "gray",
         borderRadius: 6,
         paddingHorizontal: 15,
-        color: "#000",
-        backgroundColor: "#ffffff",
+        color: "#3D2E00",
+        backgroundColor: "#F8C61E",
         marginTop: 15,
         justifyContent: "center",
         alignItems: "center",
