@@ -1,9 +1,10 @@
 import Userlogin from "@/api/userLogin";
 import Loader from "@/components/loader";
 import WhiteButton from "@/components/WhiteButton";
-import { router, Stack } from "expo-router";
+import * as Haptics from "expo-haptics";
+import { Link, router, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     ImageBackground,
     Keyboard,
@@ -12,6 +13,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    TouchableOpacity,
     TouchableWithoutFeedback,
     View
 } from "react-native";
@@ -29,12 +31,14 @@ export default function LoginScreen() {
             router.replace("/(tabs)")
         }
     }
-    useEffect(() => {
-        checkLogin()
-    }, [])
+    // useEffect(() => {
+    //     checkLogin()
+    // }, [])
 
     const handleLogin = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         if (!email || !password) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
             Toast.show({
                 type: "error",
                 text1: "Missing Feilds",
@@ -47,6 +51,7 @@ export default function LoginScreen() {
         const res = await Userlogin(email.toLowerCase(), password)
         console.log(res);
         if (res?.token) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             Toast.show({
                 type: "success",
                 text1: "Loggedin Successfully",
@@ -54,6 +59,7 @@ export default function LoginScreen() {
             })
             router.replace("/(tabs)")
         } else {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Toast.show({
                 type: "error",
                 text1: "Login Failed",
@@ -120,9 +126,16 @@ export default function LoginScreen() {
                                         <WhiteButton onPress={handleLogin} text="Log In" />
                                     </View>
                                     <View style={{ alignItems: "center", justifyContent: "center", marginTop: 40, rowGap: 10 }}>
-                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Forgot Password</Text>
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                                                router.push("/forgotpass");
+                                            }}
+                                        >
+                                            <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Forgot Password</Text>
+                                        </TouchableOpacity>
                                         <View style={{ width: 80, height: 2, backgroundColor: "#b2b2b2ff" }} ></View>
-                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Don't Have an account? <Text style={{ color: "#F8C61E", fontWeight: 800 }}>Sign Up</Text></Text>
+                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Don't Have an account? <Text onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)} style={{ color: "#F8C61E", fontWeight: 800 }}>Sign Up</Text></Text>
                                     </View>
                                 </View>
                             </KeyboardAvoidingView>
