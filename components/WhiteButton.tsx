@@ -1,25 +1,40 @@
 import Lightning from "@/assets/icons/lightning";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import * as Haptics from "expo-haptics";
+import { Pressable, StyleSheet, Text } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+
 
 type WhiteButtonProps = {
     text: string,
     onPress: () => void
 }
 export default function WhiteButton({ text, onPress }: WhiteButtonProps) {
+    const scale = useSharedValue(1)
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }]
+    }))
+
+    const handlePressIn = () => {
+        scale.value = withSpring(0.9);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    const handlePressOut = () => {
+        scale.value = withSpring(1);
+    }
+
+    const handlePress = () => {
+        onPress();
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
     return (
-        <View style={{ width: "100%", justifyContent: "center", alignItems: "center", marginTop: 40 }}>
-            <Pressable onPress={onPress} style={({ pressed }) => [
-                styles.loginButton,
-                {
-                    transform: [{ scale: pressed ? 0.97 : 1 }],
-                    opacity: pressed ? 0.9 : 1,
-                },
-            ]}>
+        <Animated.View style={[{ width: "100%", justifyContent: "center", alignItems: "center", marginTop: 40 }, animatedStyle]}>
+            <Pressable onPress={handlePress} onPressIn={handlePressIn} onPressOut={handlePressOut} style={styles.loginButton}>
                 <Lightning color="#3D2E00" />
                 <Text style={{ color: "#3D2E00", fontSize: 20, fontWeight: "bold" }}>{text}</Text>
 
             </Pressable>
-        </View>
+        </Animated.View>
     )
 
 }

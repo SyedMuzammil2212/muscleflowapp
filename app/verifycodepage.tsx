@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 export default function VerifyCodeScreen() {
-    const { email, flow, password } = useLocalSearchParams();
+    const { email } = useLocalSearchParams();
     const emailText = (email as string) || "alex.rivera@example.com";
     const insets = useSafeAreaInsets();
 
@@ -32,7 +32,6 @@ export default function VerifyCodeScreen() {
 
     const inputRef = useRef<TextInput>(null);
 
-    // Blinking cursor effect
     useEffect(() => {
         if (!isFocused) return;
         const interval = setInterval(() => {
@@ -83,6 +82,12 @@ export default function VerifyCodeScreen() {
                     text1: "Success",
                     text2: "OTP verified successfully!",
                 });
+                router.push({
+                    pathname: "/setpass",
+                    params: {
+                        email: emailText,
+                    }
+                })
             } else {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 Toast.show({

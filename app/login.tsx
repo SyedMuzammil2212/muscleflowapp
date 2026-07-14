@@ -2,9 +2,9 @@ import Userlogin from "@/api/userLogin";
 import Loader from "@/components/loader";
 import WhiteButton from "@/components/WhiteButton";
 import * as Haptics from "expo-haptics";
-import { Link, router, Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     ImageBackground,
     Keyboard,
@@ -17,6 +17,7 @@ import {
     TouchableWithoutFeedback,
     View
 } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Toast from "react-native-toast-message";
 
 
@@ -25,15 +26,24 @@ export default function LoginScreen() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const opacity = useSharedValue(0)
+
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: opacity.value
+    }))
+
+
     const checkLogin = async () => {
         const token = await SecureStore.getItemAsync("token");
         if (token) {
             router.replace("/(tabs)")
         }
     }
-    // useEffect(() => {
-    //     checkLogin()
-    // }, [])
+    useEffect(() => {
+        // checkLogin()
+        opacity.value = withTiming(1, { duration: 600 })
+    }, [])
 
     const handleLogin = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -87,7 +97,7 @@ export default function LoginScreen() {
                                 style={styles.mainContainer}
                                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                             >
-                                <View style={styles.container}>
+                                <Animated.View style={[styles.container, animatedStyle]}>
                                     <View style={{ rowGap: 0, alignItems: "center" }}>
                                         <Text style={styles.heading}>Muscleflow</Text>
                                         <View style={styles.tagLine}>
@@ -135,9 +145,12 @@ export default function LoginScreen() {
                                             <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Forgot Password</Text>
                                         </TouchableOpacity>
                                         <View style={{ width: 80, height: 2, backgroundColor: "#b2b2b2ff" }} ></View>
-                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Don't Have an account? <Text onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)} style={{ color: "#F8C61E", fontWeight: 800 }}>Sign Up</Text></Text>
+                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Don't Have an account? <Text onPress={() => {
+                                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                                            router.push("/signup")
+                                        }} style={{ color: "#F8C61E", fontWeight: 800 }}>Sign Up</Text></Text>
                                     </View>
-                                </View>
+                                </Animated.View>
                             </KeyboardAvoidingView>
                         </TouchableWithoutFeedback> :
                         <Loader />

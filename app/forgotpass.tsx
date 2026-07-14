@@ -4,7 +4,7 @@ import Loader from "@/components/loader";
 import WhiteButton from "@/components/WhiteButton";
 import * as Haptics from "expo-haptics";
 import { router, Stack } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Keyboard,
     KeyboardAvoidingView,
@@ -15,12 +15,23 @@ import {
     TouchableWithoutFeedback,
     View
 } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import Toast from "react-native-toast-message";
 
 
 export default function ForgotPasswordScreen() {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const opacity = useSharedValue(0)
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: opacity.value
+    }))
+
+    useEffect(() => {
+        opacity.value = withTiming(1, { duration: 600 })
+    }, [])
 
     const handleLogin = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -74,7 +85,7 @@ export default function ForgotPasswordScreen() {
                             style={styles.mainContainer}
                             behavior={Platform.OS === "ios" ? "padding" : "height"}
                         >
-                            <View style={styles.container}>
+                            <Animated.View style={[styles.container, animatedStyle]}>
                                 <View style={{ rowGap: 0, alignItems: "center", width: "80%" }}>
                                     <View style={styles.iconCircle}>
                                         <ForgotPasswordIcon />
@@ -107,7 +118,7 @@ export default function ForgotPasswordScreen() {
                                     <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Already have an account? <Text onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.replace("/login"); }} style={{ color: "#F8C61E", fontWeight: 800 }}>Login</Text></Text>
                                 </View>
 
-                            </View>
+                            </Animated.View>
 
                         </KeyboardAvoidingView>
                     </TouchableWithoutFeedback> :
