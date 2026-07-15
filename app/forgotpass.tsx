@@ -23,6 +23,10 @@ export default function ForgotPasswordScreen() {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const isValidEmail = (email: string) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
     const opacity = useSharedValue(0)
 
     const animatedStyle = useAnimatedStyle(() => ({
@@ -41,6 +45,15 @@ export default function ForgotPasswordScreen() {
                 type: "error",
                 text1: "Missing Feilds",
                 text2: "Please enter your email"
+            })
+            return
+        }
+        if (!isValidEmail(email)) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            Toast.show({
+                type: "error",
+                text1: "Invalid Email",
+                text2: "Please enter a valid email"
             })
             return
         }

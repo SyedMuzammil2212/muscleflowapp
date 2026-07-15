@@ -1,4 +1,4 @@
-import Userlogin from "@/api/userLogin";
+import CreateUser from "@/api/createUser";
 import Loader from "@/components/loader";
 import WhiteButton from "@/components/WhiteButton";
 import * as Haptics from "expo-haptics";
@@ -13,7 +13,6 @@ import {
     StyleSheet,
     Text,
     TextInput,
-    TouchableOpacity,
     TouchableWithoutFeedback,
     View
 } from "react-native";
@@ -23,11 +22,14 @@ import Toast from "react-native-toast-message";
 
 export default function SignUpScreen() {
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("");
     const [loading, setLoading] = useState(false);
 
     const opacity = useSharedValue(0)
 
+    const isValidEmail = (email: string) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
 
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: opacity.value
@@ -45,9 +47,9 @@ export default function SignUpScreen() {
         opacity.value = withTiming(1, { duration: 600 })
     }, [])
 
-    const handleLogin = async () => {
+    const handleSignUp = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        if (!email || !password) {
+        if (!email || !username) {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
             Toast.show({
                 type: "error",
@@ -56,24 +58,35 @@ export default function SignUpScreen() {
             })
             return
         }
+        if (!isValidEmail(email)) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            Toast.show({
+                type: "error",
+                text1: "Invalid Email",
+                text2: "Please enter a valid email"
+            })
+            return
+        }
         setLoading(true)
-        console.log(email.toLowerCase(), password)
-        const res = await Userlogin(email.toLowerCase(), password)
-        console.log(res);
-        if (res?.token) {
+        const res = await CreateUser(email.toLowerCase(), username)
+        if (res?.user) {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             Toast.show({
                 type: "success",
-                text1: "Loggedin Successfully",
-                text2: "Welcome Back"
+                text1: "Sent OTP",
+                text2: "An OTP was sent to your email"
             })
-            router.replace("/(tabs)")
+            router.push({
+                pathname: "/verifycodepage", params: {
+                    email: email.toLowerCase()
+                }
+            })
         } else {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Toast.show({
                 type: "error",
-                text1: "Login Failed",
-                text2: res.error
+                text1: "Signup Failed",
+                text2: res?.message
             })
         }
 
@@ -99,11 +112,10 @@ export default function SignUpScreen() {
                             >
                                 <Animated.View style={[styles.container, animatedStyle]}>
                                     <View style={{ rowGap: 0, alignItems: "center" }}>
-                                        <Text style={styles.heading}>Muscleflow</Text>
+                                        <Text style={styles.heading}>Create Account</Text>
                                         <View style={styles.tagLine}>
-                                            <Text style={styles.taglineText}>DISCIPLINE  .</Text>
-                                            <Text style={styles.taglineText}>AUTHORITY  .</Text>
-                                            <Text style={styles.taglineText}>PRECISION</Text>
+                                            <Text style={styles.taglineText}>Enter you email and username to sign up on muscle sets!</Text>
+
                                         </View>
                                     </View>
 
@@ -121,34 +133,26 @@ export default function SignUpScreen() {
                                         </View>
 
                                         <View style={{ width: "100%", justifyContent: "flex-start", alignItems: "center", marginTop: 15 }} >
-                                            <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>PASSWORD</Text>
+                                            <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>USERNAME</Text>
                                             <TextInput
                                                 style={styles.input}
-                                                placeholder="Password"
+                                                placeholder="Enter Username"
                                                 placeholderTextColor="#888"
-                                                value={password}
-                                                onChangeText={setPassword}
-                                                secureTextEntry
+                                                value={username}
+                                                onChangeText={setUsername}
                                             />
                                         </View>
                                     </View>
                                     <View style={{ width: "100%", justifyContent: "center", alignItems: "center", marginTop: 10 }}>
-                                        <WhiteButton onPress={handleLogin} text="Log In" />
+                                        <WhiteButton onPress={handleSignUp} text="Sign In" />
                                     </View>
                                     <View style={{ alignItems: "center", justifyContent: "center", marginTop: 40, rowGap: 10 }}>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                                                router.push("/forgotpass");
-                                            }}
-                                        >
-                                            <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Forgot Password</Text>
-                                        </TouchableOpacity>
+
                                         <View style={{ width: 80, height: 2, backgroundColor: "#b2b2b2ff" }} ></View>
-                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Don't Have an account? <Text onPress={() => {
+                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Already have an account? <Text onPress={() => {
                                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-                                            router.push("/signup")
-                                        }} style={{ color: "#F8C61E", fontWeight: 800 }}>Sign Up</Text></Text>
+                                            router.push("/login")
+                                        }} style={{ color: "#F8C61E", fontWeight: 800 }}>Login</Text></Text>
                                     </View>
                                 </Animated.View>
                             </KeyboardAvoidingView>
@@ -183,15 +187,17 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         columnGap: 12,
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        width: "80%"
     },
     taglineText: {
         color: "#D2C5AC",
         fontSize: 14,
+        textAlign: "center"
     },
     mainContainer: {
         flex: 1,
-        backgroundColor: "rgba(13, 20, 30, 0.6)",
+        backgroundColor: "rgba(13, 20, 30, 0.8)",
     },
 
     container: {

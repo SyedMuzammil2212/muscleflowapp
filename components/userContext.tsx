@@ -7,10 +7,13 @@ export const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: any }) => {
 
     const [user, setUser] = useState(null);
+    const [token, setToken] = useState<String>("");
+
 
     const getUserData = async () => {
-        const token = await SecureStore.getItemAsync("token");
-        const user = await getUser(token as string);
+        const token1 = await SecureStore.getItemAsync("token");
+        setToken(token1 as string)
+        const user = await getUser(token1 as string);
         setUser(user);
     }
 
@@ -19,7 +22,7 @@ export const AuthProvider = ({ children }: { children: any }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
+        <AuthContext.Provider value={{ user, setUser, token }}>
             {children}
         </AuthContext.Provider>
     );

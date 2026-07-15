@@ -26,6 +26,10 @@ export default function LoginScreen() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const isValidEmail = (email: string) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
     const opacity = useSharedValue(0)
 
 
@@ -56,10 +60,17 @@ export default function LoginScreen() {
             })
             return
         }
+        if (!isValidEmail(email)) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            Toast.show({
+                type: "error",
+                text1: "Invalid Email",
+                text2: "Please enter a valid email"
+            })
+            return
+        }
         setLoading(true)
-        console.log(email.toLowerCase(), password)
         const res = await Userlogin(email.toLowerCase(), password)
-        console.log(res);
         if (res?.token) {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             Toast.show({
