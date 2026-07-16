@@ -1,13 +1,14 @@
+import GetAllMuscleGroups from '@/api/getAllMusclesGroups';
 import GetLatestSession from '@/api/getLatestSession';
 import { quotes } from '@/components/internaldata';
 import Loader from '@/components/loader';
+import SelectMuscleSection from '@/components/selectmusclesection';
 import SessionCard from '@/components/sessionCard';
-import { Text, View } from '@/components/Themed';
 import { useUser } from '@/components/userContext';
-import { router } from 'expo-router';
 import WhiteButton from '@/components/WhiteButton';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -15,17 +16,28 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+type muscleObject = {
+  id: number,
+  name: string,
+  user_id: any
+}
+
 export default function TabOneScreen() {
   const { user, token } = useUser()
-  const [tab, setTab] = useState(0)
+  const [tab, setTab] = useState(2)
+  const [musclegroups, setMusclegroups] = useState<Array<muscleObject>>([])
   const [loading, setLoading] = useState(true)
+  const [selectedId, setSelectedId] = useState<Array<number>>([]);
+
 
   const [session, setSession] = useState({})
 
   const latestSession = async () => {
 
     const res = await GetLatestSession(token)
+    const res2 = await GetAllMuscleGroups(token)
     setSession(res);
+    setMusclegroups(res2?.muscleGroups)
     if (res?.session) {
       setLoading(false)
     }
@@ -107,46 +119,49 @@ export default function TabOneScreen() {
       { scale: cardScale.value },
     ],
   }));
+
+  const getExcercisesByMuscles = () => { }
   return (
     <>
       {loading ?
         <Loader />
-        : <Animated.View style={[styles.container, headerAnimatedStyle]}>
-          <View style={styles.upperContainer}>
-            <Text style={styles.title}> Welcome Back</Text>
-            <Text style={styles.title}>{user?.username}!</Text>
-            <Animated.View style={quoteAnimatedStyle}>
+        : tab == 1 ?
+          <Animated.View style={[styles.container, headerAnimatedStyle]}>
+            <View style={styles.upperContainer}>
+              <Text style={styles.title}> Welcome Back</Text>
+              <Text style={styles.title}>{user?.username}!</Text>
+              <Animated.View style={quoteAnimatedStyle}>
 
-              <Text style={{ color: "#D2C5AC", fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>
-                "{getRandomQuote(quotes)}"
-              </Text>
+                <Text style={{ color: "#D2C5AC", fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>
+                  "{getRandomQuote(quotes)}"
+                </Text>
+              </Animated.View>
+
+
+            </View>
+            <Animated.View style={cardAnimatedStyle}>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => {
+                  router.push({
+                    pathname: "/workoutdetails",
+                    params: { sessionData: JSON.stringify(session) },
+                  });
+                }}
+                style={{ width: "100%" }}
+              >
+                <SessionCard latest={true} session={session} />
+              </TouchableOpacity>
             </Animated.View>
 
+            <WhiteButton onPress={() => { setTab(2) }} text='Start Workout' />
 
-          </View>
-          <Animated.View style={cardAnimatedStyle}>
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={() => {
-                router.push({
-                  pathname: "/workoutdetails",
-                  params: { sessionData: JSON.stringify(session) },
-                });
-              }}
-              style={{ width: "100%" }}
-            >
-              <SessionCard latest={true} session={session} />
-            </TouchableOpacity>
-          </Animated.View>
+            <Text style={styles.selectMuscle}>SELECT MUSCLE GROUPS TO BEGIN</Text>
 
-          <WhiteButton onPress={() => { }} text='Start Workout' />
+          </Animated.View> : tab == 2 ? <View style={{ flex: 1, width: "100%" }}>
+            <SelectMuscleSection selectedId={selectedId} setSelectedId={setSelectedId} setTab={setTab} musclegroups={musclegroups} />
 
-          <Text style={styles.selectMuscle}>SELECT MUSCLE GROUPS TO BEGIN</Text>
-
-
-
-
-        </Animated.View>
+          </View> : <View></View>
       }
     </>
   );
