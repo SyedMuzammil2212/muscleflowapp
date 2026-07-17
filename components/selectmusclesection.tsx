@@ -28,6 +28,7 @@ type SelectMuscleSectionProps = {
     setTab: (tab: number) => void;
     selectedId: Array<number>;
     setSelectedId: React.Dispatch<React.SetStateAction<Array<number>>>;
+    getExcercisesByMuscles: () => void;
 };
 
 interface MuscleBoxProps {
@@ -104,7 +105,7 @@ function MuscleBox({ muscle, isSelected, onPress, iconFn }: MuscleBoxProps) {
     );
 }
 
-export default function SelectMuscleSection({ musclegroups = [], setTab, selectedId, setSelectedId }: SelectMuscleSectionProps) {
+export default function SelectMuscleSection({ musclegroups = [], setTab, selectedId, setSelectedId, getExcercisesByMuscles }: SelectMuscleSectionProps) {
 
 
     const toggleSelection = (id: number) => {
@@ -156,7 +157,7 @@ export default function SelectMuscleSection({ musclegroups = [], setTab, selecte
                     style={styles.backButton}
                     onPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        console.log("Backpressed")
+
                         setTab(1)
                     }}
                     hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
@@ -185,8 +186,7 @@ export default function SelectMuscleSection({ musclegroups = [], setTab, selecte
                 <Pressable
                     onPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        console.log("Backpressed")
-                        setTab(1)
+                        getExcercisesByMuscles()
                     }}
                     hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 >

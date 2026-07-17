@@ -1,4 +1,5 @@
 import GetAllMuscleGroups from '@/api/getAllMusclesGroups';
+import GetExercisesByMuscleIds from '@/api/getExcercisesByMuscleIds';
 import GetLatestSession from '@/api/getLatestSession';
 import { quotes } from '@/components/internaldata';
 import Loader from '@/components/loader';
@@ -8,7 +9,7 @@ import { useUser } from '@/components/userContext';
 import WhiteButton from '@/components/WhiteButton';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -22,15 +23,37 @@ type muscleObject = {
   user_id: any
 }
 
+type exerciseObject = {
+  id: number,
+  name: string,
+  user_id: any,
+  muscle_group_id: number,
+  muscle_group_name: string
+}
+
 export default function TabOneScreen() {
   const { user, token } = useUser()
   const [tab, setTab] = useState(2)
   const [musclegroups, setMusclegroups] = useState<Array<muscleObject>>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<Array<number>>([]);
+  const [exercises, setExercises] = useState<Array<exerciseObject>>([])
 
 
   const [session, setSession] = useState({})
+
+  const getExcercisesByMuscles = async () => {
+    setLoading(true)
+    const requestData = {
+      musclegroupids: selectedId
+    }
+    const res = await GetExercisesByMuscleIds(token, requestData)
+    if (res?.exercises) {
+      setExercises(res.exercises)
+    }
+    setTab(3)
+    setLoading(false)
+  }
 
   const latestSession = async () => {
 
@@ -120,7 +143,6 @@ export default function TabOneScreen() {
     ],
   }));
 
-  const getExcercisesByMuscles = () => { }
   return (
     <>
       {loading ?
@@ -159,9 +181,19 @@ export default function TabOneScreen() {
             <Text style={styles.selectMuscle}>SELECT MUSCLE GROUPS TO BEGIN</Text>
 
           </Animated.View> : tab == 2 ? <View style={{ flex: 1, width: "100%" }}>
-            <SelectMuscleSection selectedId={selectedId} setSelectedId={setSelectedId} setTab={setTab} musclegroups={musclegroups} />
+            <SelectMuscleSection getExcercisesByMuscles={getExcercisesByMuscles} selectedId={selectedId} setSelectedId={setSelectedId} setTab={setTab} musclegroups={musclegroups} />
 
-          </View> : <View></View>
+          </View> : <View style={{ flex: 1, width: "100%" }}>
+            <Pressable style={{
+              marginHorizontal: 16,
+              marginTop: 56,
+              padding: 16,
+              backgroundColor: "#26231E",
+              borderRadius: 12,
+            }} onPress={() => { setTab(2) }}>
+              <Text style={{ color: "#F8C61E", fontWeight: "bold", textAlign: "center" }}>Go back</Text>
+            </Pressable>
+          </View>
       }
     </>
   );
