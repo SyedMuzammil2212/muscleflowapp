@@ -21,14 +21,14 @@ export default function SessionCard({ session, latest = false }: { session: any,
 
     const getWorkoutDuration = (
         startTime: string,
-        endTime: string
-    ): number => {
+        endTime: string | null | undefined
+    ): string => {
+        if (!startTime) return "—";
+        if (!endTime) return "Ongoing";
         const start = new Date(startTime).getTime();
         const end = new Date(endTime).getTime();
-
-        const diffInMs = end - start;
-
-        return Math.floor(diffInMs / (1000 * 60));
+        const mins = Math.floor((end - start) / (1000 * 60));
+        return mins < 0 ? "—" : `${mins} min`;
     };
 
     const getTotalSets = (data: any): number => {
@@ -63,7 +63,7 @@ export default function SessionCard({ session, latest = false }: { session: any,
                 <View style={styles.belowSection}  >
                     <View style={styles.subSection} >
                         <TimerIcon />
-                        <Text style={{ color: "#D2C5AC", fontWeight: "600", fontSize: 14 }}>  {getWorkoutDuration(session?.session?.start_time, session?.session?.end_time)} min</Text>
+                        <Text style={{ color: "#D2C5AC", fontWeight: "600", fontSize: 14 }}>  {getWorkoutDuration(session?.session?.start_time, session?.session?.end_time)}</Text>
                     </View>
                     <View style={styles.subSection} >
                         <DumbbellIcon />

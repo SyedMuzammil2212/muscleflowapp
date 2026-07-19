@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 
 import Lightning from '@/assets/icons/lightning';
 import { useColorScheme } from '@/components/useColorScheme';
+import { AuthProvider } from '@/components/userContext';
 import { StyleSheet, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 
@@ -125,12 +126,16 @@ function RootLayoutNav() {
   };
 
   return (
-    <ThemeProvider value={AppTheme}>
-      <Stack >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-      <Toast config={toastConfig} />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider value={AppTheme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="workout" options={{ headerShown: false }} />
+          <Stack.Screen name="workoutdetails" options={{ headerShown: false }} />
+        </Stack>
+        <Toast config={toastConfig} />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }

@@ -7,7 +7,7 @@ import ProfileIcon from '@/assets/icons/profile';
 import WorkoutIcon from '@/assets/icons/workout';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
-import { AuthProvider } from '@/components/userContext';
+
 import * as Haptics from "expo-haptics";
 import { Pressable, Text, View } from 'react-native';
 import Animated, {
@@ -112,10 +112,9 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <AuthProvider>
-      <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: "#F8C61EF8C61E",
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: "#F8C61EF8C61E",
           tabBarInactiveTintColor: "#D2C5ACff",
           tabBarLabelStyle: {
             fontSize: 12,
@@ -228,6 +227,5 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-    </AuthProvider>
   );
 }
