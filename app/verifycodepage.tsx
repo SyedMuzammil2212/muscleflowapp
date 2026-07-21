@@ -9,7 +9,6 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Platform,
-    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -48,7 +47,6 @@ export default function VerifyCodeScreen() {
         const cleaned = text.replace(/[^0-9]/g, "");
         setCode(cleaned);
 
-        // Light haptic feedback on typing
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
         if (cleaned.length === 6) {
@@ -71,8 +69,6 @@ export default function VerifyCodeScreen() {
 
         setLoading(true);
         try {
-
-            // Support signup verification flow (if password parameter is present)
             const res = await VerifyOtp(emailText, code)
 
             if (res.check == "ok") {
@@ -142,13 +138,16 @@ export default function VerifyCodeScreen() {
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.mainContainer}>
+            <View className="flex-1 bg-deepest-2">
                 <Stack.Screen options={{ headerShown: false }} />
 
                 {/* Custom Navigation Header */}
-                <View style={[styles.headerContainer, { paddingTop: insets.top + 10 }]}>
+                <View
+                    className="absolute top-0 left-0 right-0 flex-row items-center justify-center h-20 px-5 z-10"
+                    style={{ paddingTop: insets.top + 10 }}
+                >
                     <TouchableOpacity
-                        style={styles.backButton}
+                        className="absolute left-5 justify-center items-center"
                         onPress={() => {
                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             router.back();
@@ -160,22 +159,22 @@ export default function VerifyCodeScreen() {
                 </View>
 
                 <KeyboardAvoidingView
-                    style={styles.keyboardView}
+                    className="flex-1"
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                 >
-                    <View style={styles.innerContainer}>
-                        <View style={styles.card}>
-                            <Text style={styles.cardTitle}>Verify Account</Text>
-                            <Text style={styles.cardSubtitle}>
+                    <View className="flex-1 justify-center items-center px-5">
+                        <View className="w-full max-w-[380px] bg-card-dark rounded-2xl border border-border-card py-8 px-6 items-center shadow-lg">
+                            <Text className="text-white text-2xl font-bold mb-2.5 text-center">Verify Account</Text>
+                            <Text className="text-muted text-[15px] text-center leading-[22px] mb-7">
                                 Enter the 6-digit code sent to{"\n"}
-                                <Text style={styles.emailHighlight}>{emailText}</Text>
+                                <Text className="text-brand font-bold">{emailText}</Text>
                             </Text>
 
                             {/* OTP inputs container */}
                             <TouchableOpacity
                                 activeOpacity={1}
                                 onPress={handlePress}
-                                style={styles.otpInputContainer}
+                                className="flex-row justify-between w-full mb-7 gap-x-2"
                             >
                                 {Array.from({ length: 6 }).map((_, index) => {
                                     const char = code[index] || "";
@@ -184,15 +183,14 @@ export default function VerifyCodeScreen() {
                                     return (
                                         <View
                                             key={index}
-                                            style={[
-                                                styles.otpBox,
-                                                isCurrent && isFocused && styles.otpBoxFocused,
-                                                hasChar && styles.otpBoxFilled,
-                                            ]}
+                                            className={[
+                                                "flex-1 h-14 bg-surface rounded-lg justify-center items-center border",
+                                                isCurrent && isFocused ? "border-brand border-[1.5px]" : hasChar ? "border-muted-dim" : "border-border-otp",
+                                            ].join(" ")}
                                         >
-                                            <Text style={styles.otpText}>{char}</Text>
+                                            <Text className="text-white text-2xl font-bold">{char}</Text>
                                             {isCurrent && isFocused && cursorVisible && (
-                                                <View style={styles.cursor} />
+                                                <View className="absolute w-0.5 h-[22px] bg-brand" />
                                             )}
                                         </View>
                                     );
@@ -202,7 +200,7 @@ export default function VerifyCodeScreen() {
                             {/* Hidden TextInput for OTP input */}
                             <TextInput
                                 ref={inputRef}
-                                style={styles.hiddenInput}
+                                className="absolute opacity-0 w-px h-px -z-10"
                                 value={code}
                                 onChangeText={handleCodeChange}
                                 maxLength={6}
@@ -216,7 +214,7 @@ export default function VerifyCodeScreen() {
 
                             {/* Verify Button */}
                             <TouchableOpacity
-                                style={[styles.verifyButton, code.length < 6 && styles.verifyButtonDisabled]}
+                                className={`w-full h-[54px] rounded-xl justify-center items-center mb-6 ${code.length < 6 ? "bg-[rgba(248,198,30,0.5)]" : "bg-brand"}`}
                                 onPress={handleVerify}
                                 disabled={loading || code.length < 6}
                                 activeOpacity={0.8}
@@ -224,18 +222,18 @@ export default function VerifyCodeScreen() {
                                 {loading ? (
                                     <ActivityIndicator color="#0B0E14" />
                                 ) : (
-                                    <Text style={styles.verifyButtonText}>VERIFY</Text>
+                                    <Text className="text-deepest-2 text-base font-bold tracking-widest">VERIFY</Text>
                                 )}
                             </TouchableOpacity>
 
                             {/* Resend Link */}
-                            <View style={styles.resendContainer}>
-                                <Text style={styles.resendText}>
+                            <View className="flex-row items-center justify-center">
+                                <Text className="text-muted text-sm">
                                     Didn't receive the code?{" "}
                                     {resending ? (
-                                        <Text style={styles.resendingText}>Sending...</Text>
+                                        <Text className="text-muted-dim italic">Sending...</Text>
                                     ) : (
-                                        <Text style={styles.resendLink} onPress={handleResend}>
+                                        <Text className="text-brand font-bold underline" onPress={handleResend}>
                                             Resend
                                         </Text>
                                     )}
@@ -248,160 +246,3 @@ export default function VerifyCodeScreen() {
         </TouchableWithoutFeedback>
     );
 }
-
-const styles = StyleSheet.create({
-    mainContainer: {
-        flex: 1,
-        backgroundColor: "#0B0E14",
-    },
-    keyboardView: {
-        flex: 1,
-    },
-    innerContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 20,
-    },
-    headerContainer: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        height: 80,
-        paddingHorizontal: 20,
-        zIndex: 10,
-    },
-    backButton: {
-        position: "absolute",
-        left: 20,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    headerTitle: {
-        color: "#F8C61E",
-        fontSize: 22,
-        fontWeight: "bold",
-        letterSpacing: 0.5,
-    },
-    card: {
-        width: "100%",
-        maxWidth: 380,
-        backgroundColor: "#151B26",
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: "#232E3F",
-        paddingVertical: 32,
-        paddingHorizontal: 24,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.3,
-        shadowRadius: 20,
-        elevation: 8,
-    },
-    cardTitle: {
-        color: "#FFFFFF",
-        fontSize: 26,
-        fontWeight: "bold",
-        marginBottom: 10,
-        textAlign: "center",
-    },
-    cardSubtitle: {
-        color: "#D2C5AC",
-        fontSize: 15,
-        textAlign: "center",
-        lineHeight: 22,
-        marginBottom: 30,
-    },
-    emailHighlight: {
-        color: "#F8C61E",
-        fontWeight: "bold",
-    },
-    otpInputContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: "100%",
-        marginBottom: 30,
-        columnGap: 8,
-    },
-    otpBox: {
-        flex: 1,
-        height: 56,
-        backgroundColor: "#1C2534",
-        borderWidth: 1,
-        borderColor: "#3D372C",
-        borderRadius: 8,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    otpBoxFocused: {
-        borderColor: "#F8C61E",
-        borderWidth: 1.5,
-    },
-    otpBoxFilled: {
-        borderColor: "#9A9079",
-    },
-    otpText: {
-        color: "#FFFFFF",
-        fontSize: 22,
-        fontWeight: "bold",
-    },
-    cursor: {
-        position: "absolute",
-        width: 2,
-        height: 22,
-        backgroundColor: "#F8C61E",
-    },
-    hiddenInput: {
-        position: "absolute",
-        opacity: 0,
-        width: 1,
-        height: 1,
-        zIndex: -1,
-    },
-    verifyButton: {
-        width: "100%",
-        height: 54,
-        backgroundColor: "#F8C61E",
-        borderRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        shadowColor: "#F8C61E",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 6,
-        elevation: 4,
-        marginBottom: 25,
-    },
-    verifyButtonDisabled: {
-        backgroundColor: "rgba(248, 198, 30, 0.5)",
-    },
-    verifyButtonText: {
-        color: "#0B0E14",
-        fontSize: 16,
-        fontWeight: "bold",
-        letterSpacing: 1,
-    },
-    resendContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    resendText: {
-        color: "#D2C5AC",
-        fontSize: 14,
-    },
-    resendLink: {
-        color: "#F8C61E",
-        fontWeight: "bold",
-        textDecorationLine: "underline",
-    },
-    resendingText: {
-        color: "#9A9079",
-        fontStyle: "italic",
-    },
-});

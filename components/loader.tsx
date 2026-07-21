@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, View } from "react-native";
+import { Animated, Easing, View } from "react-native";
 
 export default function Loader() {
     const rotate = useRef(new Animated.Value(0)).current;
@@ -26,33 +26,11 @@ export default function Loader() {
     });
 
     return (
-        <View style={styles.container}>
+        <View className="justify-center items-center h-full bg-deepest">
             <Animated.View
-                style={[
-                    styles.loader,
-                    {
-                        transform: [{ rotate: spin }],
-                    },
-                ]}
+                className="w-[50px] h-[50px] rounded-full border-[8px] border-brand border-t-transparent"
+                style={{ transform: [{ rotate: spin }] }}
             />
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100%",
-        backgroundColor: "#0D141E"
-    },
-
-    loader: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        borderWidth: 8,
-        borderColor: "#F8C61E",          // Your brand color
-        borderTopColor: "transparent",   // Creates the gap
-    },
-});

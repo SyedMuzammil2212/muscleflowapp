@@ -10,7 +10,6 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Platform,
-    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -32,11 +31,9 @@ export default function LoginScreen() {
 
     const opacity = useSharedValue(0)
 
-
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: opacity.value
     }))
-
 
     const checkLogin = async () => {
         const token = await SecureStore.getItemAsync("token");
@@ -94,9 +91,8 @@ export default function LoginScreen() {
     return (
         <ImageBackground
             source={require("@/assets/images/loginbg.jpeg")}
-            style={styles.background}
+            className="flex-1"
             resizeMode="cover">
-
 
             <>
                 <Stack.Screen options={{ headerShown: false }} />
@@ -105,25 +101,25 @@ export default function LoginScreen() {
 
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                             <KeyboardAvoidingView
-                                style={styles.mainContainer}
+                                className="flex-1 bg-[rgba(13,20,30,0.6)]"
                                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                             >
-                                <Animated.View style={[styles.container, animatedStyle]}>
-                                    <View style={{ rowGap: 0, alignItems: "center" }}>
-                                        <Text style={styles.heading}>Muscleflow</Text>
-                                        <View style={styles.tagLine}>
-                                            <Text style={styles.taglineText}>DISCIPLINE  .</Text>
-                                            <Text style={styles.taglineText}>AUTHORITY  .</Text>
-                                            <Text style={styles.taglineText}>PRECISION</Text>
+                                <Animated.View className="flex-1 justify-center items-center" style={animatedStyle}>
+                                    <View className="gap-y-0 items-center">
+                                        <Text className="text-brand text-4xl font-bold mb-5">Muscleflow</Text>
+                                        <View className="flex-row gap-x-3 items-center justify-center">
+                                            <Text className="text-muted text-sm">DISCIPLINE  .</Text>
+                                            <Text className="text-muted text-sm">AUTHORITY  .</Text>
+                                            <Text className="text-muted text-sm">PRECISION</Text>
                                         </View>
                                     </View>
 
-                                    <View style={{ width: "100%", alignItems: "center", justifyContent: "center", rowGap: 6, marginTop: 40 }}>
+                                    <View className="w-full items-center justify-center gap-y-1.5 mt-10">
 
-                                        <View style={{ width: "100%", justifyContent: "flex-start", alignItems: "center" }} >
-                                            <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>EMAIL</Text>
+                                        <View className="w-full justify-start items-center">
+                                            <Text className="text-muted w-4/5 font-bold text-base">EMAIL</Text>
                                             <TextInput
-                                                style={styles.input}
+                                                className="w-4/5 h-[50px] border border-muted-dim rounded-md px-4 text-white mt-2.5"
                                                 placeholder="Email"
                                                 placeholderTextColor="#888"
                                                 value={email}
@@ -131,10 +127,10 @@ export default function LoginScreen() {
                                             />
                                         </View>
 
-                                        <View style={{ width: "100%", justifyContent: "flex-start", alignItems: "center", marginTop: 15 }} >
-                                            <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>PASSWORD</Text>
+                                        <View className="w-full justify-start items-center mt-4">
+                                            <Text className="text-muted w-4/5 font-bold text-base">PASSWORD</Text>
                                             <TextInput
-                                                style={styles.input}
+                                                className="w-4/5 h-[50px] border border-muted-dim rounded-md px-4 text-white mt-2.5"
                                                 placeholder="Password"
                                                 placeholderTextColor="#888"
                                                 value={password}
@@ -143,23 +139,23 @@ export default function LoginScreen() {
                                             />
                                         </View>
                                     </View>
-                                    <View style={{ width: "100%", justifyContent: "center", alignItems: "center", marginTop: 10 }}>
+                                    <View className="w-full justify-center items-center mt-2.5">
                                         <WhiteButton onPress={handleLogin} text="Log In" />
                                     </View>
-                                    <View style={{ alignItems: "center", justifyContent: "center", marginTop: 40, rowGap: 10 }}>
+                                    <View className="items-center justify-center mt-10 gap-y-2.5">
                                         <TouchableOpacity
                                             onPress={() => {
                                                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                                                 router.push("/forgotpass");
                                             }}
                                         >
-                                            <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Forgot Password</Text>
+                                            <Text className="text-base text-muted font-semibold"> Forgot Password</Text>
                                         </TouchableOpacity>
-                                        <View style={{ width: 80, height: 2, backgroundColor: "#b2b2b2ff" }} ></View>
-                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Don't Have an account? <Text onPress={() => {
+                                        <View className="w-20 h-0.5 bg-[#b2b2b2]" />
+                                        <Text className="text-base text-muted font-semibold"> Don't Have an account? <Text onPress={() => {
                                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
                                             router.push("/signup")
-                                        }} style={{ color: "#F8C61E", fontWeight: 800 }}>Sign Up</Text></Text>
+                                        }} className="text-brand font-extrabold">Sign Up</Text></Text>
                                     </View>
                                 </Animated.View>
                             </KeyboardAvoidingView>
@@ -170,62 +166,3 @@ export default function LoginScreen() {
         </ImageBackground>
     );
 }
-
-const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-    },
-
-    loginButton: {
-        width: "80%",
-        height: 50,
-        borderWidth: 1,
-        borderColor: "gray",
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        color: "#000",
-        backgroundColor: "#ffffff",
-        marginTop: 15,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    tagLine: {
-        flexDirection: "row",
-        columnGap: 12,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    taglineText: {
-        color: "#D2C5AC",
-        fontSize: 14,
-    },
-    mainContainer: {
-        flex: 1,
-        backgroundColor: "rgba(13, 20, 30, 0.6)",
-    },
-
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    heading: {
-        color: "#F8C61E",
-        fontSize: 36,
-        fontWeight: "bold",
-        marginBottom: 20,
-    },
-
-    input: {
-        width: "80%",
-        height: 50,
-        borderWidth: 1,
-        borderColor: "#9A9079",
-        borderRadius: 6,
-        paddingHorizontal: 15,
-        color: "#fff",
-        marginTop: 10,
-    },
-});

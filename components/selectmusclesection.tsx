@@ -8,7 +8,7 @@ import LegIcon from "@/assets/icons/legIcon";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import React, { useEffect } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import Animated, {
     interpolateColor,
     useAnimatedStyle,
@@ -91,13 +91,22 @@ function MuscleBox({ muscle, isSelected, onPress, iconFn }: MuscleBoxProps) {
             onPress={onPress}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
-            style={styles.pressableWrapper}
+            className="w-[46%] mb-3"
         >
-            <Animated.View style={[styles.box, animatedBoxStyle]}>
-                <Animated.View style={[styles.outerCircle, animatedCircleStyle]}>
+            <Animated.View
+                className="h-[120px] w-full p-3 rounded-xl items-center justify-center gap-y-3 border-[1.5px]"
+                style={animatedBoxStyle}
+            >
+                <Animated.View
+                    className="h-[50px] w-[50px] rounded-full items-center justify-center"
+                    style={animatedCircleStyle}
+                >
                     {iconFn ? iconFn(iconColor) : <DumbbellIcon height={30} width={30} color={iconColor} />}
                 </Animated.View>
-                <Text style={[styles.muscleText, { color: textColor }]}>
+                <Text
+                    className="uppercase w-full text-center font-semibold text-base tracking-wide"
+                    style={{ color: textColor }}
+                >
                     {muscle.name}
                 </Text>
             </Animated.View>
@@ -106,7 +115,6 @@ function MuscleBox({ muscle, isSelected, onPress, iconFn }: MuscleBoxProps) {
 }
 
 export default function SelectMuscleSection({ musclegroups = [], setTab, selectedId, setSelectedId, getExcercisesByMuscles }: SelectMuscleSectionProps) {
-
 
     const toggleSelection = (id: number) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -151,22 +159,25 @@ export default function SelectMuscleSection({ musclegroups = [], setTab, selecte
     ];
 
     return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+            className="bg-dark w-full h-full"
+            contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
+            showsVerticalScrollIndicator={false}
+        >
             <View>
                 <Pressable
-                    style={styles.backButton}
+                    className="absolute left-2.5 top-[60px] z-10 justify-center items-center"
                     onPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
                         setTab(1)
                     }}
                     hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
                 >
                     <Ionicons name="arrow-back" size={24} color="#F8C61E" />
                 </Pressable>
-                <Text style={styles.headerTitle}>Select Muscle</Text>
+                <Text className="text-brand w-full text-center text-2xl mt-16 font-medium uppercase tracking-wide">Select Muscle</Text>
             </View>
-            <View style={styles.boxesParent}>
+            <View className="flex-row flex-wrap justify-center items-center gap-x-4 gap-y-4 mt-6">
                 {musclegroups.map((muscle) => {
                     const iconObj = icons.find((i) => i.name === muscle.name);
                     const isSelected = selectedId.includes(muscle.id);
@@ -182,7 +193,7 @@ export default function SelectMuscleSection({ musclegroups = [], setTab, selecte
                     );
                 })}
             </View>
-            {selectedId.length > 0 && <View style={styles.frontButton}>
+            {selectedId.length > 0 && <View className="absolute right-5 bottom-[60px] z-10 justify-center items-center h-[50px] w-[50px] rounded-full bg-brand">
                 <Pressable
                     onPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -193,88 +204,6 @@ export default function SelectMuscleSection({ musclegroups = [], setTab, selecte
                     <Ionicons name="arrow-forward" size={24} color="#252C37" />
                 </Pressable>
             </View>}
-
-
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: "#252C37",
-        width: "100%",
-        height: "100%",
-    },
-    scrollContent: {
-        padding: 16,
-        paddingBottom: 80,
-    },
-    headerTitle: {
-        color: "#F8C61E",
-        width: "100%",
-        textAlign: "center",
-        fontSize: 22,
-        marginTop: 60,
-        fontWeight: 500,
-        textTransform: "uppercase",
-        letterSpacing: 1,
-    },
-    boxesParent: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "center",
-        alignItems: "center",
-        rowGap: 16,
-        columnGap: 16,
-        marginTop: 24,
-    },
-    pressableWrapper: {
-        width: "46%",
-        marginBottom: 12,
-    },
-    box: {
-        height: 120,
-        width: "100%",
-        padding: 12,
-        borderRadius: 12,
-        alignItems: "center",
-        justifyContent: "center",
-        rowGap: 12,
-        borderWidth: 1.5,
-    },
-    muscleText: {
-        textTransform: "uppercase",
-        width: "100%",
-        textAlign: "center",
-        fontWeight: "600",
-        fontSize: 16,
-        letterSpacing: 0.5,
-    },
-    outerCircle: {
-        height: 50,
-        width: 50,
-        borderRadius: 25,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    backButton: {
-        position: "absolute",
-        left: 10,
-        top: 60,
-        zIndex: 10,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    frontButton: {
-        position: "absolute",
-        right: 20,
-        bottom: 60,
-        zIndex: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        height: 50,
-        width: 50,
-        borderRadius: 100,
-        backgroundColor: "#F8C61E"
-    },
-});

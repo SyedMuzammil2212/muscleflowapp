@@ -1,6 +1,6 @@
 import Lightning from "@/assets/icons/lightning";
 import * as Haptics from "expo-haptics";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, Text } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 
 
@@ -28,32 +28,17 @@ export default function WhiteButton({ text, onPress }: WhiteButtonProps) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     return (
-        <Animated.View style={[{ width: "100%", justifyContent: "center", alignItems: "center", marginTop: 40 }, animatedStyle]}>
-            <Pressable onPress={handlePress} onPressIn={handlePressIn} onPressOut={handlePressOut} style={styles.loginButton}>
+        <Animated.View className="w-full justify-center items-center mt-10" style={animatedStyle}>
+            <Pressable
+                onPress={handlePress}
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                className="flex-row gap-x-2.5 w-4/5 h-[50px] rounded-md px-4 bg-brand mt-4 justify-center items-center"
+            >
                 <Lightning color="#3D2E00" />
-                <Text style={{ color: "#3D2E00", fontSize: 20, fontWeight: "bold" }}>{text}</Text>
-
+                <Text className="text-[#3D2E00] text-xl font-bold">{text}</Text>
             </Pressable>
         </Animated.View>
     )
 
 }
-
-const styles = StyleSheet.create({
-
-    loginButton: {
-        flexDirection: "row",
-        columnGap: 10,
-        width: "80%",
-        height: 50,
-        borderRadius: 6,
-        paddingHorizontal: 15,
-        color: "#3D2E00",
-        backgroundColor: "#F8C61E",
-        marginTop: 15,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-
-});

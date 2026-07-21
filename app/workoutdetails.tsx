@@ -6,7 +6,6 @@ import React from "react";
 import {
   Dimensions,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -59,7 +58,6 @@ export default function WorkoutDetails() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
 
-  // Parse sessionData from route params if passed
   let sessionData: SessionData | null = null;
   const sessionDataParam = params.sessionData || params.mockSessionData;
 
@@ -75,7 +73,6 @@ export default function WorkoutDetails() {
   const session = sessionData?.session;
   const muscleGroups: MuscleGroup[] = sessionData?.muscleGroups || [];
 
-  // 1. Calculate workout duration in minutes
   const getWorkoutDuration = (): number => {
     if (!session?.start_time || !session?.end_time) return 0;
     const start = new Date(session.start_time).getTime();
@@ -84,7 +81,6 @@ export default function WorkoutDetails() {
     return Math.floor(diffInMs / (1000 * 60));
   };
 
-  // 2. Calculate total volume (sum of weight * reps for all sets)
   const getTotalVolume = (): string => {
     let volume = 0;
     muscleGroups.forEach((group) => {
@@ -98,7 +94,6 @@ export default function WorkoutDetails() {
     return volume.toLocaleString();
   };
 
-  // 3. Format Completed Date
   const getFormattedDate = (): string => {
     const targetDate = session?.date_completed || session?.start_time;
     if (!targetDate) return "";
@@ -109,99 +104,101 @@ export default function WorkoutDetails() {
     });
   };
 
-  // 4. Generate Heading (e.g. "Chest & Biceps")
   const getMusclesTrained = (): string => {
     if (muscleGroups.length === 0) return "Workout Details";
     return muscleGroups.map((group) => group.name).join(" & ");
   };
 
   return (
-    <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
-      {/* Hide the default screen header to use custom styling */}
+    <View className="flex-1 bg-darker" style={{ paddingTop: insets.top }}>
       <Stack.Screen options={{ headerShown: false }} />
 
       {/* Custom Header Bar */}
-      <View style={styles.headerBar}>
+      <View className="h-14 flex-row items-center justify-between px-4 border-b border-[#1C2431]">
         <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
+          onPress={() => router.push("/(tabs)")}
+          className="w-10 h-10 justify-center items-start"
           activeOpacity={0.7}
         >
           <Ionicons name="arrow-back" size={24} color="#F8C61E" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Workout Details</Text>
-        <View style={styles.headerSpacer} />
+        <Text className="text-brand text-xl font-bold text-center">Workout Details</Text>
+        <View className="w-10" />
       </View>
 
       {/* Main Content Area */}
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1"
+        contentContainerStyle={{ padding: 16, paddingBottom: 40, flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Workout Heading */}
-        <View style={styles.titleSection}>
-          <Text style={styles.workoutName}>{getMusclesTrained()}</Text>
-          <View style={styles.dateBadge}>
+        <View className="items-center my-3 gap-y-2">
+          <Text className="text-text-primary text-[28px] font-extrabold text-center">{getMusclesTrained()}</Text>
+          <View className="flex-row items-center bg-surface px-3 py-1.5 rounded-[20px] gap-x-1.5 border border-border">
             <CalendarIcon width={14} height={14} color="#F8C61E" />
-            <Text style={styles.dateText}>{getFormattedDate()}</Text>
+            <Text className="text-text-subtle text-[13px] font-semibold">{getFormattedDate()}</Text>
           </View>
         </View>
 
         {/* Duration & Volume Side-by-Side Cards */}
-        <View style={styles.metricsRow}>
+        <View className="flex-row justify-between gap-x-3 my-4">
           {/* Duration Card */}
-          <View style={styles.metricCard}>
+          <View className="flex-1 bg-card rounded-2xl border border-border py-4 px-2 items-center gap-y-1.5">
             <TimerIcon width={22} height={22} color="#F8C61E" />
-            <Text style={styles.metricLabel}>DURATION</Text>
-            <Text style={styles.metricValue}>{getWorkoutDuration()} min</Text>
+            <Text className="text-text-subtle text-[11px] font-bold tracking-wide">DURATION</Text>
+            <Text className="text-text-primary text-xl font-extrabold">{getWorkoutDuration()} min</Text>
           </View>
 
           {/* Volume Card */}
-          <View style={styles.metricCard}>
+          <View className="flex-1 bg-card rounded-2xl border border-border py-4 px-2 items-center gap-y-1.5">
             <DumbbellIcon width={22} height={22} color="#F8C61E" />
-            <Text style={styles.metricLabel}>VOLUME</Text>
-            <Text style={styles.metricValue}>{getTotalVolume()} Kg</Text>
+            <Text className="text-text-subtle text-[11px] font-bold tracking-wide">VOLUME</Text>
+            <Text className="text-text-primary text-xl font-extrabold">{getTotalVolume()} Kg</Text>
           </View>
         </View>
 
         {/* Muscle Groups Sections */}
         {muscleGroups.map((muscleGroup) => (
-          <View key={muscleGroup.id} style={styles.muscleGroupContainer}>
+          <View key={muscleGroup.id} className="mt-5 gap-y-3.5">
             {/* Muscle Group Title & Divider line */}
-            <View style={styles.muscleGroupHeaderRow}>
-              <Text style={styles.muscleGroupTitle}>{muscleGroup.name.toUpperCase()}</Text>
-              <View style={styles.muscleGroupLine} />
+            <View className="flex-row items-center gap-x-2">
+              <Text className="text-brand text-base font-extrabold tracking-wide">{muscleGroup.name.toUpperCase()}</Text>
+              <View className="flex-1 h-px bg-border" />
             </View>
 
             {/* Exercises List */}
             {muscleGroup.exercises?.map((exercise) => (
-              <View key={exercise.id} style={styles.exerciseCard}>
+              <View key={exercise.id} className="bg-card rounded-2xl border border-border border-l-[4px] border-l-brand p-4 gap-y-4">
                 {/* Exercise Header Area */}
-                <View style={styles.exerciseHeader}>
-                  <Text style={styles.exerciseName}>{exercise.name}</Text>
-                  <View style={styles.setsCountBadge}>
-                    <Text style={styles.setsCountText}>
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-text-primary text-lg font-bold flex-1 mr-2">{exercise.name}</Text>
+                  <View className="bg-card-alt border border-brand rounded px-2 py-1">
+                    <Text className="text-brand text-[10px] font-extrabold">
                       {exercise.sets?.length} SETS
                     </Text>
                   </View>
                 </View>
 
                 {/* Sets Grid */}
-                <View style={styles.setsGrid}>
+                <View className="flex-row flex-wrap gap-3">
                   {exercise.sets?.map((set) => (
-                    <View key={set.set} style={styles.setCard}>
-                      <Text style={styles.setNumberLabel}>SET</Text>
-                      <Text style={styles.setNumberValue}>{set.set}</Text>
+                    <View
+                      key={set.set}
+                      className="bg-dark border border-border rounded-xl py-3 px-2 items-center gap-y-2"
+                      style={{ width: (width - 32 - 32 - 30) / 2 }}
+                    >
+                      <Text className="text-text-subtle text-[9px] font-bold tracking-wide">SET</Text>
+                      <Text className="text-text-primary text-lg font-extrabold -mt-1">{set.set}</Text>
 
-                      <View style={styles.setDetailsRow}>
-                        <View style={styles.setDetailsColumn}>
-                          <Text style={styles.setSubLabel}>Kg</Text>
-                          <Text style={styles.setSubValue}>{set.weight}</Text>
+                      <View className="flex-row justify-around w-full border-t border-[#333C4E] pt-2">
+                        <View className="items-center">
+                          <Text className="text-text-subtle text-[9px] font-semibold">Kg</Text>
+                          <Text className="text-text-primary text-sm font-bold">{set.weight}</Text>
                         </View>
-                        <View style={styles.setDetailsColumn}>
-                          <Text style={styles.setSubLabel}>reps</Text>
-                          <Text style={styles.setSubValue}>{set.reps}</Text>
+                        <View className="items-center">
+                          <Text className="text-text-subtle text-[9px] font-semibold">reps</Text>
+                          <Text className="text-text-primary text-sm font-bold">{set.reps}</Text>
                         </View>
                       </View>
                     </View>
@@ -215,201 +212,3 @@ export default function WorkoutDetails() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: "#10141D", // Dark background theme
-  },
-  headerBar: {
-    height: 56,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1C2431",
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  headerTitle: {
-    color: "#F8C61E",
-    fontSize: 20,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-  headerSpacer: {
-    width: 40,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 40,
-    flexGrow: 1,
-  },
-  titleSection: {
-    alignItems: "center",
-    marginVertical: 12,
-    rowGap: 8,
-  },
-  workoutName: {
-    color: "#DCE3F1",
-    fontSize: 28,
-    fontWeight: "800",
-    textAlign: "center",
-  },
-  dateBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#1C2431",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    columnGap: 6,
-    borderWidth: 1,
-    borderColor: "#2B3547",
-  },
-  dateText: {
-    color: "#95A1B5",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  metricsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    columnGap: 12,
-    marginVertical: 16,
-  },
-  metricCard: {
-    flex: 1,
-    backgroundColor: "#19202B",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#2B3547",
-    paddingVertical: 16,
-    paddingHorizontal: 8,
-    alignItems: "center",
-    rowGap: 6,
-  },
-  metricLabel: {
-    color: "#95A1B5",
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
-  },
-  metricValue: {
-    color: "#DCE3F1",
-    fontSize: 20,
-    fontWeight: "800",
-  },
-  muscleGroupContainer: {
-    marginTop: 20,
-    rowGap: 14,
-  },
-  muscleGroupHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    columnGap: 8,
-  },
-  muscleGroupTitle: {
-    color: "#F8C61E",
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 1,
-  },
-  muscleGroupLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#2B3547",
-  },
-  exerciseCard: {
-    backgroundColor: "#19202B",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#2B3547",
-    borderLeftWidth: 4,
-    borderLeftColor: "#F8C61E",
-    padding: 16,
-    rowGap: 16,
-  },
-  exerciseHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  exerciseName: {
-    color: "#DCE3F1",
-    fontSize: 18,
-    fontWeight: "700",
-    flex: 1,
-    marginRight: 8,
-  },
-  setsCountBadge: {
-    backgroundColor: "#26231E",
-    borderColor: "#F8C61E",
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  setsCountText: {
-    color: "#F8C61E",
-    fontSize: 10,
-    fontWeight: "800",
-  },
-  setsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  setCard: {
-    width: (width - 32 - 32 - 30) / 2, // calculate exact width to fit 2 columns nicely
-    backgroundColor: "#252C37",
-    borderColor: "#2B3547",
-    borderWidth: 1,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    alignItems: "center",
-    rowGap: 8,
-  },
-  setNumberLabel: {
-    color: "#95A1B5",
-    fontSize: 9,
-    fontWeight: "700",
-    letterSpacing: 0.5,
-  },
-  setNumberValue: {
-    color: "#DCE3F1",
-    fontSize: 18,
-    fontWeight: "800",
-    marginTop: -4,
-  },
-  setDetailsRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    borderTopWidth: 1,
-    borderTopColor: "#333C4E",
-    paddingTop: 8,
-  },
-  setDetailsColumn: {
-    alignItems: "center",
-  },
-  setSubLabel: {
-    color: "#95A1B5",
-    fontSize: 9,
-    fontWeight: "600",
-  },
-  setSubValue: {
-    color: "#DCE3F1",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-});

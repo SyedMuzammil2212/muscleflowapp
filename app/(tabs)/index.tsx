@@ -15,7 +15,6 @@ import { useEffect, useState } from 'react';
 import {
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -57,14 +56,12 @@ export default function TabOneScreen() {
   const getExcercisesByMuscles = async () => {
     setLoading(true)
     try {
-      // 1. Start the workout session
       const sessionRes = await StartSession(token)
       if (sessionRes?.session?.id) {
         setSessionId(sessionRes.session.id)
         setSessionStartTime(sessionRes.session.start_time)
       }
 
-      // 2. Fetch exercises for selected muscles
       const requestData = { musclegroupids: selectedId }
       const res = await GetExercisesByMuscleIds(token, requestData)
       if (res?.exercises) {
@@ -115,29 +112,12 @@ export default function TabOneScreen() {
     headerOpacity.value = withTiming(1, { duration: 500 });
     headerY.value = withTiming(0, { duration: 500 });
 
-    quoteOpacity.value = withDelay(
-      150,
-      withTiming(1, { duration: 500 })
-    );
-    quoteY.value = withDelay(
-      150,
-      withTiming(0, { duration: 500 })
-    );
+    quoteOpacity.value = withDelay(150, withTiming(1, { duration: 500 }));
+    quoteY.value = withDelay(150, withTiming(0, { duration: 500 }));
 
-    cardOpacity.value = withDelay(
-      300,
-      withTiming(1, { duration: 500 })
-    );
-
-    cardY.value = withDelay(
-      300,
-      withTiming(0, { duration: 500 })
-    );
-
-    cardScale.value = withDelay(
-      300,
-      withTiming(1, { duration: 500 })
-    );
+    cardOpacity.value = withDelay(300, withTiming(1, { duration: 500 }));
+    cardY.value = withDelay(300, withTiming(0, { duration: 500 }));
+    cardScale.value = withDelay(300, withTiming(1, { duration: 500 }));
   };
 
   useEffect(() => {
@@ -164,7 +144,6 @@ export default function TabOneScreen() {
     ],
   }));
 
-  // Derive unique muscle groups that have exercises
   const muscleTabsForPicker = musclegroups.filter(m => selectedId.includes(m.id));
   const filteredExercises = activeMuscleFilter
     ? exercises.filter(e => e.muscle_group_id === activeMuscleFilter)
@@ -191,17 +170,17 @@ export default function TabOneScreen() {
       {loading ?
         <Loader />
         : tab == 1 ?
-          <Animated.View style={[styles.container, headerAnimatedStyle]}>
-            <View style={styles.upperContainer}>
-              <Text style={styles.title}> Welcome Back</Text>
-              <Text style={styles.title}>{user?.username}!</Text>
+          <Animated.View className="flex-1 items-center justify-center bg-dark w-full p-4" style={headerAnimatedStyle}>
+            <View className="bg-dark items-center justify-center w-full pb-12">
+              <Text className="text-4xl font-bold text-brand opacity-80"> Welcome Back</Text>
+              <Text className="text-4xl font-bold text-brand opacity-80">{user?.username}!</Text>
               <Animated.View style={quoteAnimatedStyle}>
-                <Text style={{ color: "#D2C5AC", fontSize: 16, fontWeight: 600, textAlign: "center", marginTop: 20 }}>
+                <Text className="text-muted text-base font-semibold text-center mt-5">
                   "{getRandomQuote(quotes)}"
                 </Text>
               </Animated.View>
             </View>
-            <Animated.View style={cardAnimatedStyle}>
+            <Animated.View className="w-full" style={cardAnimatedStyle}>
               <TouchableOpacity
                 activeOpacity={0.9}
                 onPress={() => {
@@ -210,7 +189,7 @@ export default function TabOneScreen() {
                     params: { sessionData: JSON.stringify(session) },
                   });
                 }}
-                style={{ width: "100%" }}
+                className="w-full"
               >
                 <SessionCard latest={true} session={session} />
               </TouchableOpacity>
@@ -218,69 +197,70 @@ export default function TabOneScreen() {
 
             <WhiteButton onPress={() => { setTab(2) }} text='Start Workout' />
 
-            <Text style={styles.selectMuscle}>SELECT MUSCLE GROUPS TO BEGIN</Text>
+            <Text className="text-muted text-[15px] font-semibold text-center mt-10">SELECT MUSCLE GROUPS TO BEGIN</Text>
 
-          </Animated.View> : tab == 2 ? <View style={{ flex: 1, width: "100%" }}>
+          </Animated.View> : tab == 2 ? <View className="flex-1 w-full">
             <SelectMuscleSection getExcercisesByMuscles={getExcercisesByMuscles} selectedId={selectedId} setSelectedId={setSelectedId} setTab={setTab} musclegroups={musclegroups} />
 
           </View> : tab == 3 ? (
             /* ─── EXERCISE PICKER ─── */
-            <View style={pickerStyles.container}>
+            <View className="flex-1 bg-darker w-full">
               {/* Header */}
-              <View style={pickerStyles.header}>
+              <View className="flex-row items-center justify-between px-4 pt-[60px] pb-3">
                 <Pressable
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     setTab(2);
                     setSessionId(null);
                   }}
-                  style={pickerStyles.backBtn}
+                  className="w-[30px] items-center"
                   hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                 >
                   <Ionicons name="arrow-back" size={22} color="#F8C61E" />
                 </Pressable>
-                <Text style={pickerStyles.headerTitle}>{muscleGroupLabel}</Text>
-                <View style={{ width: 30 }} />
+                <Text className="text-brand text-lg font-extrabold tracking-widest text-center">{muscleGroupLabel}</Text>
+                <View className="w-[30px]" />
               </View>
 
-              <Text style={pickerStyles.subTitle}>Pick an exercise to begin</Text>
+              <Text className="text-text-muted text-[13px] font-medium text-center mb-4">Pick an exercise to begin</Text>
 
               {/* Muscle filter tabs */}
               {muscleTabsForPicker.length > 1 && (
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={pickerStyles.tabsRow} contentContainerStyle={{ paddingHorizontal: 16, columnGap: 10, alignItems: 'center' }}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="shrink-0 mb-3 max-h-[30px]" contentContainerStyle={{ paddingHorizontal: 16, columnGap: 10, alignItems: 'center' }}>
                   <Pressable
                     onPress={() => setActiveMuscleFilter(null)}
-                    style={[pickerStyles.tab, activeMuscleFilter === null && pickerStyles.tabActive]}
+                    className={`px-4 py-[7px] rounded-[20px] border ${activeMuscleFilter === null ? 'bg-card-alt border-brand' : 'bg-card border-border'}`}
                   >
-                    <Text style={[pickerStyles.tabText, activeMuscleFilter === null && pickerStyles.tabTextActive]}>All</Text>
+                    <Text className={`text-[13px] font-semibold ${activeMuscleFilter === null ? 'text-brand' : 'text-text-muted'}`}>All</Text>
                   </Pressable>
                   {muscleTabsForPicker.map(m => (
                     <Pressable
                       key={m.id}
                       onPress={() => setActiveMuscleFilter(m.id)}
-                      style={[pickerStyles.tab, activeMuscleFilter === m.id && pickerStyles.tabActive]}
+                      className={`px-4 py-[7px] rounded-[20px] border ${activeMuscleFilter === m.id ? 'bg-card-alt border-brand' : 'bg-card border-border'}`}
                     >
-                      <Text style={[pickerStyles.tabText, activeMuscleFilter === m.id && pickerStyles.tabTextActive]}>{m.name}</Text>
+                      <Text className={`text-[13px] font-semibold ${activeMuscleFilter === m.id ? 'text-brand' : 'text-text-muted'}`}>{m.name}</Text>
                     </Pressable>
                   ))}
                 </ScrollView>
               )}
 
               {/* Exercise list */}
-              <ScrollView style={{ flex: 1 }} contentContainerStyle={pickerStyles.list} showsVerticalScrollIndicator={false}>
+              <ScrollView className="flex-1" contentContainerStyle={{ padding: 16, paddingBottom: 40, rowGap: 12 }} showsVerticalScrollIndicator={false}>
                 {filteredExercises.map((exercise, idx) => (
                   <Pressable
                     key={exercise.id}
                     onPress={() => handlePickExercise(exercise)}
-                    style={({ pressed }) => [pickerStyles.exerciseCard, pressed && { opacity: 0.75 }]}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1 }]}
+                    className="bg-card rounded-[14px] border border-border border-l-[3px] border-l-brand px-4 py-3.5 flex-row items-center justify-between"
                   >
-                    <View style={pickerStyles.exerciseLeft}>
-                      <View style={pickerStyles.exerciseNumBadge}>
-                        <Text style={pickerStyles.exerciseNum}>{idx + 1}</Text>
+                    <View className="flex-row items-center gap-x-3 flex-1">
+                      <View className="w-8 h-8 rounded-full bg-dark border border-[#3A4559] items-center justify-center">
+                        <Text className="text-brand text-[13px] font-bold">{idx + 1}</Text>
                       </View>
                       <View>
-                        <Text style={pickerStyles.exerciseName}>{exercise.name}</Text>
-                        <Text style={pickerStyles.exerciseMuscle}>{exercise.muscle_group_name}</Text>
+                        <Text className="text-text-primary text-base font-bold">{exercise.name}</Text>
+                        <Text className="text-text-muted text-xs font-medium mt-0.5">{exercise.muscle_group_name}</Text>
                       </View>
                     </View>
                     <Ionicons name="chevron-forward" size={18} color="#F8C61E" />
@@ -288,162 +268,12 @@ export default function TabOneScreen() {
                 ))}
 
                 {filteredExercises.length === 0 && (
-                  <Text style={pickerStyles.emptyText}>No exercises found for this muscle group.</Text>
+                  <Text className="text-text-muted text-sm text-center mt-10">No exercises found for this muscle group.</Text>
                 )}
               </ScrollView>
             </View>
-          ) : <View></View>
+          ) : <View />
       }
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: "#252C37",
-    width: "100%",
-    padding: 16
-  },
-  upperContainer: {
-    backgroundColor: "#252C37",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    paddingBottom: 50
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: "#F8C61E",
-    opacity: 0.8,
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-  selectMuscle: {
-    color: "#D2C5AC",
-    fontSize: 15,
-    fontWeight: 600,
-    textAlign: "center",
-    marginTop: 40,
-  }
-});
-
-const pickerStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#10141D',
-    width: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 60,
-    paddingBottom: 12,
-  },
-  backBtn: {
-    width: 30,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    color: '#F8C61E',
-    fontSize: 18,
-    fontWeight: '800',
-    letterSpacing: 1.5,
-    textAlign: 'center',
-  },
-  subTitle: {
-    color: '#6B7C96',
-    fontSize: 13,
-    fontWeight: '500',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  tabsRow: {
-    flexShrink: 0,
-    marginBottom: 12,
-  },
-  tab: {
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    borderRadius: 20,
-    backgroundColor: '#19202B',
-    borderWidth: 1,
-    borderColor: '#2B3547',
-  },
-  tabActive: {
-    backgroundColor: '#26231E',
-    borderColor: '#F8C61E',
-  },
-  tabText: {
-    color: '#6B7C96',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  tabTextActive: {
-    color: '#F8C61E',
-  },
-  list: {
-    padding: 16,
-    paddingBottom: 40,
-    rowGap: 12,
-  },
-  exerciseCard: {
-    backgroundColor: '#19202B',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#2B3547',
-    borderLeftWidth: 3,
-    borderLeftColor: '#F8C61E',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  exerciseLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: 12,
-    flex: 1,
-  },
-  exerciseNumBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#252C37',
-    borderWidth: 1,
-    borderColor: '#3A4559',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  exerciseNum: {
-    color: '#F8C61E',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  exerciseName: {
-    color: '#DCE3F1',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  exerciseMuscle: {
-    color: '#6B7C96',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  emptyText: {
-    color: '#6B7C96',
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 40,
-  },
-});

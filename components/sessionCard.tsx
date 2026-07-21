@@ -2,7 +2,7 @@ import ChartIcon from "@/assets/icons/charticon";
 import DumbbellIcon from "@/assets/icons/dumbellicon";
 import TimerIcon from "@/assets/icons/timericon";
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function SessionCard({ session, latest = false }: { session: any, latest: boolean }) {
 
@@ -50,62 +50,27 @@ export default function SessionCard({ session, latest = false }: { session: any,
 
     const muscles = getMusclesTrained(session);
 
-
-
-
     return (
         <Link href={`/workoutdetails?mockSessionData=${JSON.stringify(session)}`}>
-            <View style={styles.container}  >
-                {latest && <Text style={{ color: "#F8C61E", fontWeight: "600", fontSize: 12 }}> LATEST SESSION </Text>}
-                <Text style={{ color: "#DCE3F1", fontWeight: "600", fontSize: 24 }}> {muscles.join(', ')} </Text>
+            <View className="w-full bg-card px-3 py-5 rounded-2xl border border-border-accent gap-y-2 items-start justify-start">
+                {latest && <Text className="text-brand font-semibold text-xs"> LATEST SESSION </Text>}
+                <Text className="text-text-primary font-semibold text-2xl"> {muscles.join(', ')} </Text>
 
-
-                <View style={styles.belowSection}  >
-                    <View style={styles.subSection} >
+                <View className="w-full flex-row justify-between items-center pl-2 pt-1.5">
+                    <View className="flex-row items-center justify-center gap-x-0.5">
                         <TimerIcon />
-                        <Text style={{ color: "#D2C5AC", fontWeight: "600", fontSize: 14 }}>  {getWorkoutDuration(session?.session?.start_time, session?.session?.end_time)}</Text>
+                        <Text className="text-muted font-semibold text-sm">  {getWorkoutDuration(session?.session?.start_time, session?.session?.end_time)}</Text>
                     </View>
-                    <View style={styles.subSection} >
+                    <View className="flex-row items-center justify-center gap-x-0.5">
                         <DumbbellIcon />
-                        <Text style={{ color: "#D2C5AC", fontWeight: "600", fontSize: 14 }}> {getTotalSets(session)} sets </Text>
+                        <Text className="text-muted font-semibold text-sm"> {getTotalSets(session)} sets </Text>
                     </View>
-                    <View style={styles.subSection} >
+                    <View className="flex-row items-center justify-center gap-x-0.5">
                         <ChartIcon />
-                        <Text style={{ color: "#D2C5AC", fontWeight: "600", fontSize: 14 }}> {getTotalExercises(session?.muscleGroups)} exercises </Text>
+                        <Text className="text-muted font-semibold text-sm"> {getTotalExercises(session?.muscleGroups)} exercises </Text>
                     </View>
-
                 </View>
-
             </View>
         </Link>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        width: "100%",
-        backgroundColor: "#19202B",
-        paddingHorizontal: 12,
-        paddingVertical: 20,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: "#4E4633",
-        rowGap: 8,
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
-    },
-    belowSection: {
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingLeft: 8,
-        paddingTop: 6
-    },
-    subSection: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 1,
-    }
-})

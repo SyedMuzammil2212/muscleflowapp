@@ -9,7 +9,6 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Platform,
-    StyleSheet,
     Text,
     TextInput,
     TouchableWithoutFeedback,
@@ -85,9 +84,6 @@ export default function ForgotPasswordScreen() {
     }
 
     return (
-
-
-
         <>
             <Stack.Screen options={{ headerShown: false }} />
             {
@@ -95,44 +91,38 @@ export default function ForgotPasswordScreen() {
 
                     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                         <KeyboardAvoidingView
-                            style={styles.mainContainer}
+                            className="flex-1 bg-[rgba(13,20,30,1)]"
                             behavior={Platform.OS === "ios" ? "padding" : "height"}
                         >
-                            <Animated.View style={[styles.container, animatedStyle]}>
-                                <View style={{ rowGap: 0, alignItems: "center", width: "80%" }}>
-                                    <View style={styles.iconCircle}>
+                            <Animated.View className="flex-1 justify-center items-center" style={animatedStyle}>
+                                <View className="gap-y-0 items-center w-4/5">
+                                    <View className="w-24 h-24 bg-surface-2 rounded-full justify-center items-center border border-muted-dim mb-12 mt-12">
                                         <ForgotPasswordIcon />
                                     </View>
-                                    <Text style={styles.heading}>Forgot Password?</Text>
-                                    <Text style={styles.taglineText}>Enter your email address and we will send you a 6 digit verification code to you email</Text>
+                                    <Text className="text-text-primary text-2xl font-bold mb-2.5">Forgot Password?</Text>
+                                    <Text className="text-muted text-base text-center">Enter your email address and we will send you a 6 digit verification code to you email</Text>
                                 </View>
 
-                                <View style={{ width: "100%", alignItems: "center", justifyContent: "center", rowGap: 6, marginTop: 40 }}>
-
-                                    <View style={{ width: "100%", justifyContent: "flex-start", alignItems: "center" }} >
-                                        <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>EMAIL</Text>
+                                <View className="w-full items-center justify-center gap-y-1.5 mt-10">
+                                    <View className="w-full justify-start items-center">
+                                        <Text className="text-muted w-4/5 font-bold text-base">EMAIL</Text>
                                         <TextInput
-                                            style={styles.input}
+                                            className="w-4/5 h-[50px] border border-muted-dim rounded-md px-4 text-white mt-2.5"
                                             placeholder="Enter Email"
                                             placeholderTextColor="#888"
                                             value={email}
                                             onChangeText={setEmail}
                                         />
                                     </View>
-
-
                                 </View>
-                                <View style={{ width: "100%", justifyContent: "center", alignItems: "center", marginTop: 0 }}>
+                                <View className="w-full justify-center items-center mt-0">
                                     <WhiteButton onPress={handleLogin} text="Send Code" />
                                 </View>
-                                <View style={{ alignItems: "center", justifyContent: "center", marginTop: 40, rowGap: 10 }}>
-
-                                    <View style={{ width: 80, height: 2, backgroundColor: "#b2b2b2ff" }} ></View>
-                                    <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Already have an account? <Text onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.replace("/login"); }} style={{ color: "#F8C61E", fontWeight: 800 }}>Login</Text></Text>
+                                <View className="items-center justify-center mt-10 gap-y-2.5">
+                                    <View className="w-20 h-0.5 bg-[#b2b2b2]" />
+                                    <Text className="text-base text-muted font-semibold"> Already have an account? <Text onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.replace("/login"); }} className="text-brand font-extrabold">Login</Text></Text>
                                 </View>
-
                             </Animated.View>
-
                         </KeyboardAvoidingView>
                     </TouchableWithoutFeedback> :
                     <Loader />
@@ -140,65 +130,3 @@ export default function ForgotPasswordScreen() {
         </>
     );
 }
-
-const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-    },
-
-    iconCircle: { width: 96, height: 96, backgroundColor: "#232A35", borderRadius: 50, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#9A9079", marginBottom: 50, marginTop: 50 },
-
-    loginButton: {
-        width: "80%",
-        height: 50,
-        borderWidth: 1,
-        borderColor: "gray",
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        color: "#000",
-        backgroundColor: "#ffffff",
-        marginTop: 15,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    tagLine: {
-        flexDirection: "row",
-        columnGap: 12,
-        alignItems: "center",
-        justifyContent: "center"
-    },
-    taglineText: {
-        color: "#D2C5AC",
-        fontSize: 16,
-        textAlign: "center"
-    },
-    mainContainer: {
-        flex: 1,
-        backgroundColor: "rgba(13, 20, 30, 1)",
-    },
-
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    heading: {
-        color: "#DCE3F1",
-        fontSize: 26,
-        fontWeight: "bold",
-        marginBottom: 10,
-    },
-
-    input: {
-        width: "80%",
-        height: 50,
-        borderWidth: 1,
-        borderColor: "#9A9079",
-        borderRadius: 6,
-        paddingHorizontal: 15,
-        color: "#fff",
-        marginTop: 10,
-    },
-});

@@ -10,7 +10,6 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Platform,
-    StyleSheet,
     Text,
     TextInput,
     TouchableWithoutFeedback,
@@ -34,7 +33,6 @@ export default function SignUpScreen() {
     const animatedStyle = useAnimatedStyle(() => ({
         opacity: opacity.value
     }))
-
 
     const checkLogin = async () => {
         const token = await SecureStore.getItemAsync("token");
@@ -96,9 +94,8 @@ export default function SignUpScreen() {
     return (
         <ImageBackground
             source={require("@/assets/images/loginbg.jpeg")}
-            style={styles.background}
+            className="flex-1"
             resizeMode="cover">
-
 
             <>
                 <Stack.Screen options={{ headerShown: false }} />
@@ -107,24 +104,23 @@ export default function SignUpScreen() {
 
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                             <KeyboardAvoidingView
-                                style={styles.mainContainer}
+                                className="flex-1 bg-[rgba(13,20,30,0.8)]"
                                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                             >
-                                <Animated.View style={[styles.container, animatedStyle]}>
-                                    <View style={{ rowGap: 0, alignItems: "center" }}>
-                                        <Text style={styles.heading}>Create Account</Text>
-                                        <View style={styles.tagLine}>
-                                            <Text style={styles.taglineText}>Enter you email and username to sign up on muscle sets!</Text>
-
+                                <Animated.View className="flex-1 justify-center items-center" style={animatedStyle}>
+                                    <View className="gap-y-0 items-center">
+                                        <Text className="text-brand text-4xl font-bold mb-5">Create Account</Text>
+                                        <View className="flex-row gap-x-3 items-center justify-center w-4/5">
+                                            <Text className="text-muted text-sm text-center">Enter you email and username to sign up on muscle sets!</Text>
                                         </View>
                                     </View>
 
-                                    <View style={{ width: "100%", alignItems: "center", justifyContent: "center", rowGap: 6, marginTop: 40 }}>
+                                    <View className="w-full items-center justify-center gap-y-1.5 mt-10">
 
-                                        <View style={{ width: "100%", justifyContent: "flex-start", alignItems: "center" }} >
-                                            <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>EMAIL</Text>
+                                        <View className="w-full justify-start items-center">
+                                            <Text className="text-muted w-4/5 font-bold text-base">EMAIL</Text>
                                             <TextInput
-                                                style={styles.input}
+                                                className="w-4/5 h-[50px] border border-muted-dim rounded-md px-4 text-white mt-2.5"
                                                 placeholder="Email"
                                                 placeholderTextColor="#888"
                                                 value={email}
@@ -132,10 +128,10 @@ export default function SignUpScreen() {
                                             />
                                         </View>
 
-                                        <View style={{ width: "100%", justifyContent: "flex-start", alignItems: "center", marginTop: 15 }} >
-                                            <Text style={{ color: "#D2C5AC", width: "80%", fontWeight: 700, fontSize: 16 }}>USERNAME</Text>
+                                        <View className="w-full justify-start items-center mt-4">
+                                            <Text className="text-muted w-4/5 font-bold text-base">USERNAME</Text>
                                             <TextInput
-                                                style={styles.input}
+                                                className="w-4/5 h-[50px] border border-muted-dim rounded-md px-4 text-white mt-2.5"
                                                 placeholder="Enter Username"
                                                 placeholderTextColor="#888"
                                                 value={username}
@@ -143,16 +139,15 @@ export default function SignUpScreen() {
                                             />
                                         </View>
                                     </View>
-                                    <View style={{ width: "100%", justifyContent: "center", alignItems: "center", marginTop: 10 }}>
+                                    <View className="w-full justify-center items-center mt-2.5">
                                         <WhiteButton onPress={handleSignUp} text="Sign In" />
                                     </View>
-                                    <View style={{ alignItems: "center", justifyContent: "center", marginTop: 40, rowGap: 10 }}>
-
-                                        <View style={{ width: 80, height: 2, backgroundColor: "#b2b2b2ff" }} ></View>
-                                        <Text style={{ fontSize: 16, color: "#D2C5AC", fontWeight: 600 }}> Already have an account? <Text onPress={() => {
+                                    <View className="items-center justify-center mt-10 gap-y-2.5">
+                                        <View className="w-20 h-0.5 bg-[#b2b2b2]" />
+                                        <Text className="text-base text-muted font-semibold"> Already have an account? <Text onPress={() => {
                                             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
                                             router.push("/login")
-                                        }} style={{ color: "#F8C61E", fontWeight: 800 }}>Login</Text></Text>
+                                        }} className="text-brand font-extrabold">Login</Text></Text>
                                     </View>
                                 </Animated.View>
                             </KeyboardAvoidingView>
@@ -163,64 +158,3 @@ export default function SignUpScreen() {
         </ImageBackground>
     );
 }
-
-const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-    },
-
-    loginButton: {
-        width: "80%",
-        height: 50,
-        borderWidth: 1,
-        borderColor: "gray",
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        color: "#000",
-        backgroundColor: "#ffffff",
-        marginTop: 15,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    tagLine: {
-        flexDirection: "row",
-        columnGap: 12,
-        alignItems: "center",
-        justifyContent: "center",
-        width: "80%"
-    },
-    taglineText: {
-        color: "#D2C5AC",
-        fontSize: 14,
-        textAlign: "center"
-    },
-    mainContainer: {
-        flex: 1,
-        backgroundColor: "rgba(13, 20, 30, 0.8)",
-    },
-
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    heading: {
-        color: "#F8C61E",
-        fontSize: 36,
-        fontWeight: "bold",
-        marginBottom: 20,
-    },
-
-    input: {
-        width: "80%",
-        height: 50,
-        borderWidth: 1,
-        borderColor: "#9A9079",
-        borderRadius: 6,
-        paddingHorizontal: 15,
-        color: "#fff",
-        marginTop: 10,
-    },
-});
