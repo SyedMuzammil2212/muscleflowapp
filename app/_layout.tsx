@@ -10,8 +10,11 @@ import "../global.css";
 import Lightning from '@/assets/icons/lightning';
 import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider } from '@/components/userContext';
+import * as WebBrowser from "expo-web-browser";
 import { Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export {
   // Catch any errors thrown by the Layout component.

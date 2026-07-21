@@ -42,7 +42,7 @@ export default function LoginScreen() {
         }
     }
     useEffect(() => {
-        // checkLogin()
+        checkLogin()
         opacity.value = withTiming(1, { duration: 600 })
     }, [])
 
