@@ -1,4 +1,5 @@
 import getUser from "@/api/getUser";
+import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -12,6 +13,10 @@ export const AuthProvider = ({ children }: { children: any }) => {
 
     const getUserData = async () => {
         const token1 = await SecureStore.getItemAsync("token");
+        if (!token1) {
+            router.push("/login")
+            return;
+        }
         setToken(token1 as string)
         const user = await getUser(token1 as string);
         setUser(user);

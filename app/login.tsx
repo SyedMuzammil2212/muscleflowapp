@@ -1,6 +1,7 @@
 import Userlogin from "@/api/userLogin";
 import Loader from "@/components/loader";
 import WhiteButton from "@/components/WhiteButton";
+import useGoogleAuth from "@/hooks/useGoogleAuth";
 import * as Haptics from "expo-haptics";
 import { router, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -24,6 +25,24 @@ export default function LoginScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const { signInWithGoogle } = useGoogleAuth()
+
+    const handleGoogleLogin = async () => {
+
+        console.log("Button pressed");
+        try {
+            const idToken = await signInWithGoogle();
+
+            if (!idToken) {
+                return;
+            }
+
+            console.log("Google ID Token:", idToken);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const isValidEmail = (email: string) => {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -42,7 +61,7 @@ export default function LoginScreen() {
         }
     }
     useEffect(() => {
-        checkLogin()
+        // checkLogin()
         opacity.value = withTiming(1, { duration: 600 })
     }, [])
 
@@ -141,6 +160,12 @@ export default function LoginScreen() {
                                     </View>
                                     <View className="w-full justify-center items-center mt-2.5">
                                         <WhiteButton onPress={handleLogin} text="Log In" />
+                                    </View>
+                                    <View className="w-full justify-center items-center mt-4">
+                                        <WhiteButton
+                                            onPress={handleGoogleLogin}
+                                            text="Continue with Google"
+                                        />
                                     </View>
                                     <View className="items-center justify-center mt-10 gap-y-2.5">
                                         <TouchableOpacity

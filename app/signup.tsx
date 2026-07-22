@@ -76,7 +76,8 @@ export default function SignUpScreen() {
             })
             router.push({
                 pathname: "/verifycodepage", params: {
-                    email: email.toLowerCase()
+                    email: email.toLowerCase(),
+                    flow: "signup"
                 }
             })
         } else {

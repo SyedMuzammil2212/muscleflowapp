@@ -1,4 +1,5 @@
 import SetPasswordCall from "@/api/setpasswordapi";
+import VerifySignupOtp from "@/api/verifySignupOtp";
 import LockIcon from "@/assets/icons/lockIcon";
 import Loader from "@/components/loader";
 import WhiteButton from "@/components/WhiteButton";
@@ -20,7 +21,7 @@ import Toast from "react-native-toast-message";
 
 export default function SetPasswordScreen() {
 
-    const { email } = useLocalSearchParams();
+    const { email, otp, flow } = useLocalSearchParams();
     const [password, setPassword] = useState("")
     const [confirm, setConfirm] = useState("")
     const emailText = (email as string) || "alex.rivera@example.com";
@@ -67,21 +68,25 @@ export default function SetPasswordScreen() {
 
         setLoading(true);
         try {
-            const res = await SetPasswordCall(emailText, password)
+            let res;
+            if (flow === "signup") {
+                res = await VerifySignupOtp(emailText, (otp as string) || "", password);
+            } else {
+                res = await SetPasswordCall(emailText, password);
+            }
+
             if (res?.user) {
                 Toast.show({
                     type: "success",
                     text1: "Success",
-                    text2: "Password set successfully",
+                    text2: flow === "signup" ? "Account verified & password set!" : "Password set successfully",
                 });
                 router.push("/login")
-
-
             } else {
                 Toast.show({
                     type: "error",
                     text1: "Error",
-                    text2: res?.message || "Something went wrong. Please try again.",
+                    text2: res?.error || res?.message || "Something went wrong. Please try again.",
                 })
             }
 

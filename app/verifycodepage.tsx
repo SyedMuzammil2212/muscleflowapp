@@ -19,8 +19,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 export default function VerifyCodeScreen() {
-    const { email } = useLocalSearchParams();
+    const { email, flow } = useLocalSearchParams();
     const emailText = (email as string) || "alex.rivera@example.com";
+    const isSignup = flow === "signup";
     const insets = useSafeAreaInsets();
 
     const [code, setCode] = useState("");
@@ -63,6 +64,19 @@ export default function VerifyCodeScreen() {
                 type: "error",
                 text1: "Invalid Code",
                 text2: "Please enter the 6-digit code",
+            });
+            return;
+        }
+
+        if (isSignup) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            router.push({
+                pathname: "/setpass",
+                params: {
+                    email: emailText,
+                    otp: code,
+                    flow: "signup",
+                },
             });
             return;
         }
