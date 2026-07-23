@@ -1,4 +1,6 @@
+import GoogleLogin from "@/api/googleLogin";
 import Userlogin from "@/api/userLogin";
+import GoogleIcon from "@/assets/icons/googleIcon";
 import Loader from "@/components/loader";
 import WhiteButton from "@/components/WhiteButton";
 import useGoogleAuth from "@/hooks/useGoogleAuth";
@@ -11,6 +13,7 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Platform,
+    Pressable,
     Text,
     TextInput,
     TouchableOpacity,
@@ -37,7 +40,29 @@ export default function LoginScreen() {
                 return;
             }
 
-            console.log("Google ID Token:", idToken);
+            setLoading(true)
+
+            const response = await GoogleLogin(idToken);
+
+            if (response?.token) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Toast.show({
+                    type: "success",
+                    text1: "Loggedin Successfully",
+                    text2: "Welcome Back"
+                })
+                router.push("/(tabs)")
+            } else {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                Toast.show({
+                    type: "error",
+                    text1: "Login Failed",
+                    text2: response.error
+                })
+            }
+
+            setLoading(false)
+
 
         } catch (error) {
             console.log(error);
@@ -57,7 +82,7 @@ export default function LoginScreen() {
     const checkLogin = async () => {
         const token = await SecureStore.getItemAsync("token");
         if (token) {
-            router.replace("/(tabs)")
+            router.push("/(tabs)")
         }
     }
     useEffect(() => {
@@ -94,7 +119,7 @@ export default function LoginScreen() {
                 text1: "Loggedin Successfully",
                 text2: "Welcome Back"
             })
-            router.replace("/(tabs)")
+            router.push("/(tabs)")
         } else {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Toast.show({
@@ -161,12 +186,24 @@ export default function LoginScreen() {
                                     <View className="w-full justify-center items-center mt-2.5">
                                         <WhiteButton onPress={handleLogin} text="Log In" />
                                     </View>
-                                    <View className="w-full justify-center items-center mt-4">
+                                    {/* <View className="w-full justify-center items-center ">
                                         <WhiteButton
                                             onPress={handleGoogleLogin}
                                             text="Continue with Google"
                                         />
+                                    </View> */}
+                                    <View className=" flex flex-row gap-3 items-center justify-center mt-6 " >
+                                        <View className="w-24 h-0.5 bg-[#D2C5AC]"></View>
+                                        <Text className="font-[14px] text-[#D2C5AC]">OR LOG IN WITH</Text>
+                                        <View className="w-24 h-0.5 bg-[#D2C5AC]"></View>
                                     </View>
+                                    <Pressable
+                                        onPress={handleGoogleLogin}
+                                        className="flex-row gap-x-2.5 w-4/5 h-[50px] rounded-md px-4 border border-muted-dim mt-4 justify-center items-center"
+                                    >
+                                        <GoogleIcon />
+                                        <Text className="text-[#DCE3F1] text-xl font-bold">GOOGLE</Text>
+                                    </Pressable>
                                     <View className="items-center justify-center mt-10 gap-y-2.5">
                                         <TouchableOpacity
                                             onPress={() => {

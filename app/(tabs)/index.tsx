@@ -50,6 +50,7 @@ export default function TabOneScreen() {
   const [sessionId, setSessionId] = useState<number | null>(null)
   const [sessionStartTime, setSessionStartTime] = useState<string | null>(null)
   const [activeMuscleFilter, setActiveMuscleFilter] = useState<number | null>(null)
+  const [nosession, setNosession] = useState(false)
 
   const [session, setSession] = useState({})
 
@@ -76,12 +77,21 @@ export default function TabOneScreen() {
   }
 
   const latestSession = async () => {
-    const res = await GetLatestSession(token)
-    const res2 = await GetAllMuscleGroups(token)
-    setSession(res);
-    setMusclegroups(res2?.muscleGroups)
-    if (res?.session) {
-      setLoading(false)
+    setLoading(true);
+    try {
+      const res = await GetLatestSession(token);
+      const res2 = await GetAllMuscleGroups(token);
+      setSession(res);
+      setMusclegroups(res2?.muscleGroups || []);
+      if (!res?.session || res?.nosession) {
+        setNosession(true);
+      } else {
+        setNosession(false);
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
     }
   }
   useEffect(() => {
@@ -181,7 +191,7 @@ export default function TabOneScreen() {
               </Animated.View>
             </View>
             <Animated.View className="w-full" style={cardAnimatedStyle}>
-              <TouchableOpacity
+              {!nosession && <TouchableOpacity
                 activeOpacity={0.9}
                 onPress={() => {
                   router.push({
@@ -192,7 +202,7 @@ export default function TabOneScreen() {
                 className="w-full"
               >
                 <SessionCard latest={true} session={session} />
-              </TouchableOpacity>
+              </TouchableOpacity>}
             </Animated.View>
 
             <WhiteButton onPress={() => { setTab(2) }} text='Start Workout' />

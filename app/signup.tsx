@@ -1,6 +1,9 @@
 import CreateUser from "@/api/createUser";
+import GoogleSignUp from "@/api/googleSignup";
+import GoogleIcon from "@/assets/icons/googleIcon";
 import Loader from "@/components/loader";
 import WhiteButton from "@/components/WhiteButton";
+import useGoogleAuth from "@/hooks/useGoogleAuth";
 import * as Haptics from "expo-haptics";
 import { router, Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -10,6 +13,7 @@ import {
     Keyboard,
     KeyboardAvoidingView,
     Platform,
+    Pressable,
     Text,
     TextInput,
     TouchableWithoutFeedback,
@@ -19,10 +23,53 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-na
 import Toast from "react-native-toast-message";
 
 
+
+
+
 export default function SignUpScreen() {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [loading, setLoading] = useState(false);
+    const { signInWithGoogle } = useGoogleAuth()
+
+    const handleGoogleSignup = async () => {
+
+        console.log("Button pressed");
+        try {
+            const idToken = await signInWithGoogle();
+
+            if (!idToken) {
+                return;
+            }
+
+            setLoading(true)
+
+            const response = await GoogleSignUp(idToken);
+
+            if (response?.token) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Toast.show({
+                    type: "success",
+                    text1: "Signedup Successfully",
+                    text2: "Welcome to MuscleFlow"
+                })
+                router.push("/(tabs)")
+            } else {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                Toast.show({
+                    type: "error",
+                    text1: "Login Failed",
+                    text2: response.error
+                })
+            }
+
+            setLoading(false)
+
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const opacity = useSharedValue(0)
 
@@ -143,6 +190,18 @@ export default function SignUpScreen() {
                                     <View className="w-full justify-center items-center mt-2.5">
                                         <WhiteButton onPress={handleSignUp} text="Sign In" />
                                     </View>
+                                    <View className=" flex flex-row gap-3 items-center justify-center mt-6 " >
+                                        <View className="w-24 h-0.5 bg-[#D2C5AC]"></View>
+                                        <Text className="font-[14px] text-[#D2C5AC]">OR SIGN UP WITH</Text>
+                                        <View className="w-24 h-0.5 bg-[#D2C5AC]"></View>
+                                    </View>
+                                    <Pressable
+                                        onPress={handleGoogleSignup}
+                                        className="flex-row gap-x-2.5 w-4/5 h-[50px] rounded-md px-4 border border-muted-dim mt-4 justify-center items-center"
+                                    >
+                                        <GoogleIcon />
+                                        <Text className="text-[#DCE3F1] text-xl font-bold">GOOGLE</Text>
+                                    </Pressable>
                                     <View className="items-center justify-center mt-10 gap-y-2.5">
                                         <View className="w-20 h-0.5 bg-[#b2b2b2]" />
                                         <Text className="text-base text-muted font-semibold"> Already have an account? <Text onPress={() => {
