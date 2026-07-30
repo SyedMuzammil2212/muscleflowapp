@@ -5,7 +5,7 @@ import formatSessionDate from "@/utils/formatSessionDate";
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 
-export default function SessionCard({ session, latest = false }: { session: any, latest: boolean }) {
+export default function SessionCard({ session, latest = false, returnTo }: { session: any, latest?: boolean, returnTo?: string }) {
 
     type MuscleGroup = {
         id: number;
@@ -17,7 +17,7 @@ export default function SessionCard({ session, latest = false }: { session: any,
     };
 
     const getMusclesTrained = (data: WorkoutResponse): string[] => {
-        return data.muscleGroups.map((group) => group.name);
+        return data.muscleGroups ? data.muscleGroups.map((group) => group.name) : [];
     };
 
     const getWorkoutDuration = (
@@ -33,26 +33,31 @@ export default function SessionCard({ session, latest = false }: { session: any,
     };
 
     const getTotalSets = (data: any): number => {
+        if (!data?.muscleGroups) return 0;
         return data.muscleGroups.reduce((totalSets: any, muscleGroup: any) => {
             return (
                 totalSets +
-                muscleGroup.exercises.reduce((exerciseTotal: any, exercise: any) => {
-                    return exerciseTotal + exercise.sets.length;
-                }, 0)
+                (muscleGroup.exercises ? muscleGroup.exercises.reduce((exerciseTotal: any, exercise: any) => {
+                    return exerciseTotal + (exercise.sets ? exercise.sets.length : 0);
+                }, 0) : 0)
             );
         }, 0);
     };
 
     const getTotalExercises = (muscleGroups: any[] = []): number => {
         return muscleGroups.reduce((total, muscleGroup) => {
-            return total + muscleGroup.exercises.length;
+            return total + (muscleGroup.exercises ? muscleGroup.exercises.length : 0);
         }, 0);
     };
 
     const muscles = getMusclesTrained(session);
+    const sessionDataStr = encodeURIComponent(JSON.stringify(session));
+    const targetUrl = returnTo
+        ? `/workoutdetails?mockSessionData=${sessionDataStr}&returnTo=${returnTo}`
+        : `/workoutdetails?mockSessionData=${sessionDataStr}`;
 
     return (
-        <Link href={`/workoutdetails?mockSessionData=${JSON.stringify(session)}`}>
+        <Link href={targetUrl}>
             <View className="w-full bg-card px-3 py-5 rounded-2xl border border-border-accent gap-y-2 items-start justify-start">
                 {latest ? <Text className="text-brand font-semibold text-xs"> LATEST SESSION </Text>
                     : <Text className="text-brand font-semibold text-xs"> {formatSessionDate(session?.session?.start_time)}</Text>

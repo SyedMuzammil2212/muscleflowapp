@@ -7,8 +7,9 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-na
 type WhiteButtonProps = {
     text: string,
     onPress: () => void
+    marginStay: boolean
 }
-export default function WhiteButton({ text, onPress }: WhiteButtonProps) {
+export default function WhiteButton({ text, onPress, marginStay = true }: WhiteButtonProps) {
     const scale = useSharedValue(1)
 
     const animatedStyle = useAnimatedStyle(() => ({
@@ -28,7 +29,7 @@ export default function WhiteButton({ text, onPress }: WhiteButtonProps) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     return (
-        <Animated.View className="w-full justify-center items-center mt-10" style={animatedStyle}>
+        <Animated.View className={`w-full justify-center items-center ${marginStay ? "mt-10" : ""}`} style={animatedStyle}>
             <Pressable
                 onPress={handlePress}
                 onPressIn={handlePressIn}

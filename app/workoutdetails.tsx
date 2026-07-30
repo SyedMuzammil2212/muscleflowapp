@@ -1,5 +1,6 @@
 import DumbbellIcon from "@/assets/icons/dumbellicon";
 import TimerIcon from "@/assets/icons/timericon";
+import { useUser } from "@/components/userContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
@@ -12,6 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path, Rect } from "react-native-svg";
+
 
 // Custom Inline SVG Calendar Icon
 function CalendarIcon({ width = 14, height = 14, color = "#F8C61E" }) {
@@ -57,6 +59,7 @@ interface SessionData {
 export default function WorkoutDetails() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
+  const { unit } = useUser();
 
   let sessionData: SessionData | null = null;
   const sessionDataParam = params.sessionData || params.mockSessionData;
@@ -109,6 +112,20 @@ export default function WorkoutDetails() {
     return muscleGroups.map((group) => group.name).join(" & ");
   };
 
+  const handleBack = () => {
+    if (params.returnTo === "calendar") {
+      router.replace("/(tabs)/calendar");
+    } else if (params.returnTo === "home") {
+      router.replace("/(tabs)");
+    } else {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace("/(tabs)");
+      }
+    }
+  };
+
   return (
     <View className="flex-1 bg-darker" style={{ paddingTop: insets.top }}>
       <Stack.Screen options={{ headerShown: false }} />
@@ -116,7 +133,7 @@ export default function WorkoutDetails() {
       {/* Custom Header Bar */}
       <View className="h-14 flex-row items-center justify-between px-4 border-b border-[#1C2431]">
         <TouchableOpacity
-          onPress={() => router.push("/(tabs)")}
+          onPress={handleBack}
           className="w-10 h-10 justify-center items-start"
           activeOpacity={0.7}
         >
@@ -154,7 +171,7 @@ export default function WorkoutDetails() {
           <View className="flex-1 bg-card rounded-2xl border border-border py-4 px-2 items-center gap-y-1.5">
             <DumbbellIcon width={22} height={22} color="#F8C61E" />
             <Text className="text-text-subtle text-[11px] font-bold tracking-wide">VOLUME</Text>
-            <Text className="text-text-primary text-xl font-extrabold">{getTotalVolume()} Kg</Text>
+            <Text className="text-text-primary text-xl font-extrabold">{getTotalVolume()} {unit}</Text>
           </View>
         </View>
 
@@ -193,7 +210,7 @@ export default function WorkoutDetails() {
 
                       <View className="flex-row justify-around w-full border-t border-[#333C4E] pt-2">
                         <View className="items-center">
-                          <Text className="text-text-subtle text-[9px] font-semibold">Kg</Text>
+                          <Text className="text-text-subtle text-[9px] font-semibold">{unit || 'kg'}</Text>
                           <Text className="text-text-primary text-sm font-bold">{set.weight}</Text>
                         </View>
                         <View className="items-center">

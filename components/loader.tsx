@@ -26,10 +26,17 @@ export default function Loader() {
     });
 
     return (
-        <View className="justify-center items-center h-full bg-deepest">
+        <View style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center", backgroundColor: "#070F18" }}>
             <Animated.View
-                className="w-[50px] h-[50px] rounded-full border-[8px] border-brand border-t-transparent"
-                style={{ transform: [{ rotate: spin }] }}
+                style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 24,
+                    borderWidth: 4,
+                    borderColor: "#F8C61E",
+                    borderTopColor: "transparent",
+                    transform: [{ rotate: spin }],
+                }}
             />
         </View>
     );

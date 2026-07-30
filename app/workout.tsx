@@ -43,7 +43,7 @@ function formatElapsed(seconds: number): string {
 // ─── Component ───────────────────────────────────────────────────────────────
 export default function WorkoutScreen() {
     const insets = useSafeAreaInsets();
-    const { token } = useUser();
+    const { token, unit } = useUser();
     const params = useLocalSearchParams<{
         sessionId: string;
         exerciseJson: string;
@@ -93,12 +93,6 @@ export default function WorkoutScreen() {
         return () => clearInterval(interval);
     }, [startTime]);
 
-    // ─── Reset sets when exercise changes ───
-    const resetForExercise = (index: number) => {
-        setCurrentExerciseIndex(index);
-        setSets([{ reps: "", weight: "", done: false }]);
-    };
-
     // ─── Handlers ───
     const updateSet = (index: number, field: "reps" | "weight", value: string) => {
         setSets((prev) => {
@@ -115,7 +109,7 @@ export default function WorkoutScreen() {
 
         if (!row.reps || !row.weight || isNaN(repsNum) || isNaN(weightNum)) {
             Alert.alert("Missing data", "Please enter both reps and weight before confirming.");
-            return;
+            return false;
         }
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -142,11 +136,21 @@ export default function WorkoutScreen() {
             return next;
         });
         setLoggingIndex(null);
+        return true;
     };
 
-    const handleAddSet = () => {
+    const handleAddSet = async () => {
+        const lastIndex = sets.length - 1;
+        const lastSet = sets[lastIndex];
+
+        if (lastSet && !lastSet.done) {
+            const success = await handleConfirmSet(lastIndex);
+            if (!success) return;
+        }
+
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        setSets((prev) => [...prev, { reps: "", weight: "", done: false }]);
+        const prevWeight = lastSet ? lastSet.weight : "";
+        setSets((prev) => [...prev, { reps: "", weight: prevWeight, done: false }]);
     };
 
     const handleEndExercise = () => {
@@ -154,31 +158,36 @@ export default function WorkoutScreen() {
         router.back();
     };
 
-    const handleNextExercise = () => {
-        if (!nextExercise) return;
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        resetForExercise(currentExerciseIndex + 1);
-    };
-
     const handleEndWorkout = async () => {
         Alert.alert(
-            "End Workout",
-            "Are you sure you want to end this workout session?",
+            "End Workout?",
+            "Are you sure you want to finish this session?",
             [
                 { text: "Cancel", style: "cancel" },
                 {
-                    text: "End Workout",
+                    text: "End Session",
                     style: "destructive",
                     onPress: async () => {
                         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                        setLoading(true)
-                        await EndSession(token, sessionId);
-                        const res = await GetSessionById(token, sessionId);
-                        setLoading(false)
-                        router.push({
-                            pathname: "/workoutdetails",
-                            params: { sessionData: JSON.stringify(res) },
-                        });
+                        if (sessionId) {
+                            setLoading(true);
+                            await EndSession(token, sessionId);
+                            const res = await GetSessionById(token, sessionId);
+                            setLoading(false);
+                            if (res) {
+                                router.replace({
+                                    pathname: "/workoutdetails",
+                                    params: {
+                                        mockSessionData: JSON.stringify(res),
+                                        returnTo: "home",
+                                    },
+                                });
+                            } else {
+                                router.replace("/(tabs)");
+                            }
+                        } else {
+                            router.replace("/(tabs)");
+                        }
                     },
                 },
             ]
@@ -186,72 +195,60 @@ export default function WorkoutScreen() {
     };
 
     const handleSwitchMuscle = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         router.back();
     };
 
     // ─── Render ───
     return (
         <>
+            <Stack.Screen options={{ headerShown: false }} />
             {loading ? <Loader /> :
                 <View className="flex-1 bg-darker" style={{ paddingTop: insets.top }}>
-                    <Stack.Screen options={{ headerShown: false }} />
+                    <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+                        {/* ── Top Bar ── */}
+                        <View className="flex-row justify-between items-center py-4">
+                            <Pressable
+                                onPress={() => router.back()}
+                                className="w-10 h-10 rounded-full bg-dark border border-border items-center justify-center"
+                            >
+                                <Ionicons name="arrow-back" size={20} color="#DCE3F1" />
+                            </Pressable>
 
-                    {/* ── Top Bar ── */}
-                    <View className="flex-row items-center justify-between px-4 py-3 border-b border-[#1C2431]">
-                        <Pressable onPress={() => router.back()} hitSlop={12} className="w-9 items-center">
-                            <Ionicons name="menu" size={24} color="#95A1B5" />
-                        </Pressable>
-                        <Text className="text-brand text-[17px] font-extrabold tracking-widest uppercase">{muscleGroupLabel}</Text>
-                        <View className="w-9 items-center">
-                            <Ionicons name="person-circle" size={34} color="#3A4559" />
-                        </View>
-                    </View>
-
-                    <ScrollView
-                        className="flex-1"
-                        contentContainerStyle={{ padding: 16, paddingTop: 20 }}
-                        showsVerticalScrollIndicator={false}
-                        keyboardShouldPersistTaps="handled"
-                    >
-                        {/* ── Timer Card ── */}
-                        <View className="bg-card rounded-2xl border border-border px-5 py-[18px] mb-4">
-                            <Text className="text-text-muted text-[11px] font-bold tracking-widest mb-1">TIME ELAPSED</Text>
-                            <Text className="text-brand text-[40px] font-extrabold tracking-widest">{formatElapsed(elapsedSeconds)}</Text>
+                            {/* Timer Pill */}
+                            <View className="flex-row items-center gap-x-1.5 bg-card border border-border px-4 py-1.5 rounded-full">
+                                <View className="w-2 h-2 rounded-full bg-[#22C55E]" />
+                                <Text className="text-brand text-xs font-mono font-extrabold tracking-wider">
+                                    {formatElapsed(elapsedSeconds)}
+                                </Text>
+                            </View>
                         </View>
 
                         {/* ── Exercise Card ── */}
-                        <View className="bg-card rounded-2xl border border-border border-t-[3px] border-t-brand px-4 py-[18px] gap-y-3 mb-3.5">
-                            {/* Exercise header */}
-                            <View className="flex-row items-start justify-between">
-                                <View className="flex-1">
-                                    <Text className="text-text-primary text-[22px] font-extrabold mb-1.5">{currentExercise?.name}</Text>
-                                    <View className="flex-row items-center gap-x-1.5 bg-card-alt border border-[#F8C61E33] rounded-[20px] px-2.5 py-1 self-start">
+                        <View className="bg-card rounded-2xl border border-border p-4 gap-y-4 mb-4">
+                            {/* Exercise Header */}
+                            <View className="flex-row justify-between items-start">
+                                <View className="flex-1 pr-2">
+                                    <Text className="text-brand text-[11px] font-extrabold tracking-wider uppercase">
+                                        {muscleGroupLabel}
+                                    </Text>
+                                    <Text className="text-text-primary text-xl font-extrabold mt-0.5">
+                                        {currentExercise?.name}
+                                    </Text>
+                                    <View className="flex-row items-center gap-x-1 mt-1">
                                         <Ionicons name="trophy-outline" size={12} color="#F8C61E" />
                                         <Text className="text-brand text-[11px] font-bold">
                                             {completedSetCount} set{completedSetCount !== 1 ? "s" : ""} logged
                                         </Text>
                                     </View>
                                 </View>
-                                <Pressable
-                                    hitSlop={10}
-                                    onPress={() => {
-                                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                                        router.back();
-                                    }}
-                                >
-                                    <Ionicons name="time-outline" size={22} color="#6B7C96" />
-                                </Pressable>
                             </View>
-
-                            {/* Divider */}
-                            <View className="h-px bg-border" />
 
                             {/* Column headers */}
                             <View className="flex-row items-center px-1">
                                 <Text className="text-text-muted text-[11px] font-bold tracking-wide w-9">SET</Text>
                                 <Text className="text-text-muted text-[11px] font-bold tracking-wide flex-1 text-center">REPS</Text>
-                                <Text className="text-text-muted text-[11px] font-bold tracking-wide flex-1 text-center">WEIGHT</Text>
+                                <Text className="text-text-muted text-[11px] font-bold tracking-wide flex-1 text-center">WEIGHT ({unit ? unit.toUpperCase() : 'KG'})</Text>
                                 <View className="w-9" />
                             </View>
 
@@ -268,50 +265,24 @@ export default function WorkoutScreen() {
                                 />
                             ))}
 
-                            {/* Action row */}
-                            <View className="flex-row gap-x-2 mt-1">
+                            {/* ── Set action buttons inside card ── */}
+                            <View className="flex-row gap-x-2 pt-2">
                                 <Pressable
                                     onPress={handleAddSet}
-                                    className="flex-1 bg-dark rounded-xl py-[11px] items-center border border-[#3A4559]"
+                                    className="flex-1 bg-brand/10 rounded-xl py-3 items-center justify-center border border-brand/40 flex-row gap-x-1.5"
                                 >
-                                    <Text className="text-text-subtle text-[13px] font-bold">Add Set</Text>
+                                    <Ionicons name="add" size={18} color="#F8C61E" />
+                                    <Text className="text-brand text-[13px] font-bold">Add Set</Text>
                                 </Pressable>
 
                                 <Pressable
                                     onPress={handleEndExercise}
-                                    className="flex-[1.3] bg-dark rounded-xl py-[11px] items-center border border-[#3A4559]"
+                                    className="flex-1 bg-dark rounded-xl py-3 items-center justify-center border border-[#3A4559]"
                                 >
-                                    <Text className="text-text-primary text-[13px] font-bold">End Exercise</Text>
-                                </Pressable>
-
-                                <Pressable
-                                    onPress={handleNextExercise}
-                                    className={`flex-[1.4] bg-border rounded-xl py-[11px] items-center border border-[#4A5568] ${!nextExercise ? 'opacity-35' : ''}`}
-                                    disabled={!nextExercise}
-                                >
-                                    <Text className="text-text-primary text-[13px] font-bold">Next Exercise</Text>
+                                    <Text className="text-text-primary text-[13px] font-bold">Finish Exercise</Text>
                                 </Pressable>
                             </View>
                         </View>
-
-                        {/* ── Next exercise preview ── */}
-                        {nextExercise && (
-                            <Pressable
-                                onPress={handleNextExercise}
-                                className="bg-card rounded-[14px] border border-border px-4 py-3.5 flex-row items-center justify-between"
-                            >
-                                <View>
-                                    <Text className="text-text-subtle text-[15px] font-semibold">{nextExercise.name}</Text>
-                                    <Text className="text-[#4A5568] text-xs font-medium mt-0.5">{nextExercise.muscle_group_name}</Text>
-                                </View>
-                                <View className="flex-row items-center gap-x-1.5">
-                                    <Text className="text-text-muted text-xs font-semibold">
-                                        {loggedSetCounts[nextExercise.id] ?? 0} sets logged
-                                    </Text>
-                                    <Ionicons name="chevron-forward" size={16} color="#F8C61E" />
-                                </View>
-                            </Pressable>
-                        )}
 
                         <View className="h-[100px]" />
                     </ScrollView>
