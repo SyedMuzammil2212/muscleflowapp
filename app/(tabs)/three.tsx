@@ -13,6 +13,8 @@ import { useUser } from '@/components/userContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
@@ -31,7 +33,28 @@ import {
 } from 'react-native';
 
 export default function TabThreeScreen() {
-    const { user, token, unit, setUnit, refreshUser } = useUser();
+    const { user, token, setToken, setUser, unit, setUnit, refreshUser } = useUser();
+
+    const handleLogout = async () => {
+        Alert.alert(
+            "Log Out",
+            "Are you sure you want to log out of MuscleFlow?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Log Out",
+                    style: "destructive",
+                    onPress: async () => {
+                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                        await SecureStore.deleteItemAsync("token");
+                        if (setToken) setToken("");
+                        if (setUser) setUser(null);
+                        router.replace("/login");
+                    },
+                },
+            ]
+        );
+    };
 
     // Muscle groups & exercises state
     const [muscleGroups, setMuscleGroups] = useState<any[]>([]);
@@ -368,6 +391,20 @@ export default function TabThreeScreen() {
                             )}
                         </View>
                     </View>
+                </View>
+
+                {/* LOG OUT BUTTON */}
+                <View className="w-full pt-4 pb-6 px-1">
+                    <TouchableOpacity
+                        onPress={handleLogout}
+                        activeOpacity={0.8}
+                        className="w-full bg-[#E53E3E]/10 border border-[#E53E3E]/40 py-3.5 rounded-2xl flex-row items-center justify-center gap-x-2"
+                    >
+                        <Ionicons name="log-out-outline" size={20} color="#E53E3E" />
+                        <Text className="text-[#E53E3E] text-sm font-bold tracking-wide">
+                            Log Out
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
 

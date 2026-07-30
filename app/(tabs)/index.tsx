@@ -43,7 +43,7 @@ type exerciseObject = {
 }
 
 export default function TabOneScreen() {
-  const { user, token, unit, refreshUser } = useUser();
+  const { user, token, unit, refreshUser, authLoading } = useUser();
   const [tab, setTab] = useState(1);
   const [musclegroups, setMusclegroups] = useState<Array<muscleObject>>([]);
   const [loading, setLoading] = useState(true);
@@ -140,12 +140,13 @@ export default function TabOneScreen() {
   };
 
   useEffect(() => {
+    if (authLoading) return;
     if (token) {
       latestSession();
     } else {
-      router.push("/login");
+      router.replace("/login");
     }
-  }, [token]);
+  }, [token, authLoading]);
 
   function getRandomQuote(quotesArray: Array<String>) {
     if (!quotesArray || quotesArray.length === 0) return null;
@@ -248,7 +249,7 @@ export default function TabOneScreen() {
                 </View>
                 <View>
                   <Text className="text-[#9AA4B2] text-xs font-semibold">{getGreeting()},</Text>
-                  <Text className="text-[#DCE3F1] text-xl font-bold">{user?.username || 'Athlete'} 👋</Text>
+                  <Text className="text-[#DCE3F1] text-xl font-bold">{user?.username || 'Athlete'}</Text>
                 </View>
               </View>
 

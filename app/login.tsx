@@ -24,44 +24,41 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-na
 import Toast from "react-native-toast-message";
 
 
+import { useUser } from "@/components/userContext";
+
 export default function LoginScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const { signInWithGoogle } = useGoogleAuth()
+    const { signInWithGoogle } = useGoogleAuth();
+    const { refreshUser } = useUser();
 
     const handleGoogleLogin = async () => {
-
-        console.log("Button pressed");
         try {
             const idToken = await signInWithGoogle();
+            if (!idToken) return;
 
-            if (!idToken) {
-                return;
-            }
-
-            setLoading(true)
-
+            setLoading(true);
             const response = await GoogleLogin(idToken);
 
             if (response?.token) {
+                if (refreshUser) await refreshUser();
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 Toast.show({
                     type: "success",
-                    text1: "Loggedin Successfully",
+                    text1: "Logged in Successfully",
                     text2: "Welcome Back"
-                })
-                router.push("/(tabs)")
+                });
+                router.replace("/(tabs)");
             } else {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 Toast.show({
                     type: "error",
                     text1: "Login Failed",
                     text2: response.error
-                })
+                });
             }
-
-            setLoading(false)
+            setLoading(false);
 
 
         } catch (error) {
@@ -110,26 +107,27 @@ export default function LoginScreen() {
             })
             return
         }
-        setLoading(true)
-        const res = await Userlogin(email.toLowerCase(), password)
+        setLoading(true);
+        const res = await Userlogin(email.toLowerCase(), password);
         if (res?.token) {
+            if (refreshUser) await refreshUser();
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             Toast.show({
                 type: "success",
-                text1: "Loggedin Successfully",
+                text1: "Logged in Successfully",
                 text2: "Welcome Back"
-            })
-            router.push("/(tabs)")
+            });
+            router.replace("/(tabs)");
         } else {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Toast.show({
                 type: "error",
                 text1: "Login Failed",
                 text2: res.error
-            })
+            });
         }
 
-        setLoading(false)
+        setLoading(false);
     }
 
     return (
@@ -184,7 +182,7 @@ export default function LoginScreen() {
                                         </View>
                                     </View>
                                     <View className="w-full justify-center items-center mt-2.5">
-                                        <WhiteButton onPress={handleLogin} text="Log In" />
+                                        <WhiteButton marginStay={true} onPress={handleLogin} text="Log In" />
                                     </View>
                                     {/* <View className="w-full justify-center items-center ">
                                         <WhiteButton

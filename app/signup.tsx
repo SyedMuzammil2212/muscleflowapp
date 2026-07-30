@@ -26,44 +26,41 @@ import Toast from "react-native-toast-message";
 
 
 
+import { useUser } from "@/components/userContext";
+
 export default function SignUpScreen() {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [loading, setLoading] = useState(false);
-    const { signInWithGoogle } = useGoogleAuth()
+    const { signInWithGoogle } = useGoogleAuth();
+    const { refreshUser } = useUser();
 
-    const handleGoogleSignup = async () => {
-
-        console.log("Button pressed");
+    const handleGoogleSignUp = async () => {
         try {
             const idToken = await signInWithGoogle();
+            if (!idToken) return;
 
-            if (!idToken) {
-                return;
-            }
-
-            setLoading(true)
-
+            setLoading(true);
             const response = await GoogleSignUp(idToken);
 
             if (response?.token) {
+                if (refreshUser) await refreshUser();
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 Toast.show({
                     type: "success",
-                    text1: "Signedup Successfully",
+                    text1: "Signed up Successfully",
                     text2: "Welcome to MuscleFlow"
-                })
-                router.push("/(tabs)")
+                });
+                router.replace("/(tabs)");
             } else {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 Toast.show({
                     type: "error",
-                    text1: "Login Failed",
+                    text1: "Signup Failed",
                     text2: response.error
-                })
+                });
             }
-
-            setLoading(false)
+            setLoading(false);
 
 
         } catch (error) {
@@ -188,7 +185,7 @@ export default function SignUpScreen() {
                                         </View>
                                     </View>
                                     <View className="w-full justify-center items-center mt-2.5">
-                                        <WhiteButton onPress={handleSignUp} text="Sign In" />
+                                        <WhiteButton marginStay={true} onPress={handleSignUp} text="Sign In" />
                                     </View>
                                     <View className=" flex flex-row gap-3 items-center justify-center mt-6 " >
                                         <View className="w-24 h-0.5 bg-[#D2C5AC]"></View>
@@ -196,7 +193,7 @@ export default function SignUpScreen() {
                                         <View className="w-24 h-0.5 bg-[#D2C5AC]"></View>
                                     </View>
                                     <Pressable
-                                        onPress={handleGoogleSignup}
+                                        onPress={handleGoogleSignUp}
                                         className="flex-row gap-x-2.5 w-4/5 h-[50px] rounded-md px-4 border border-muted-dim mt-4 justify-center items-center"
                                     >
                                         <GoogleIcon />

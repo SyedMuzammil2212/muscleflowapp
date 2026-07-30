@@ -1,33 +1,54 @@
 import getUser from "@/api/getUser";
-import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: any }) => {
-
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState<String>("");
+    const [token, setToken] = useState<string>("");
     const [unit, setUnitState] = useState<"kg" | "lb">("kg");
+    const [authLoading, setAuthLoading] = useState<boolean>(true);
 
     const getUserData = async () => {
-        const token1 = await SecureStore.getItemAsync("token");
-        if (!token1) {
-            router.push("/login")
-            return;
+        try {
+            const storedToken = await SecureStore.getItemAsync("token");
+            if (!storedToken) {
+                setToken("");
+                setUser(null);
+                setAuthLoading(false);
+                return null;
+            }
+            setToken(storedToken);
+            const userData = await getUser(storedToken);
+
+            if (userData?.isUnauthorized) {
+                // Token explicitly rejected by backend (401/403)
+                await SecureStore.deleteItemAsync("token");
+                setToken("");
+                setUser(null);
+            } else if (userData && !userData.isNetworkError) {
+                setUser(userData);
+            }
+            setAuthLoading(false);
+            return storedToken;
+        } catch (e) {
+            console.log("Error loading user auth state:", e);
+            setAuthLoading(false);
+            return null;
         }
-        setToken(token1 as string)
-        const user = await getUser(token1 as string);
-        setUser(user);
-    }
+    };
 
     const loadUnit = async () => {
-        const saved = await SecureStore.getItemAsync("unit_preference");
-        if (saved === "lb") {
-            setUnitState("lb");
-        } else {
-            setUnitState("kg"); // default
+        try {
+            const saved = await SecureStore.getItemAsync("unit_preference");
+            if (saved === "lb") {
+                setUnitState("lb");
+            } else {
+                setUnitState("kg");
+            }
+        } catch (e) {
+            setUnitState("kg");
         }
     };
 
@@ -42,10 +63,21 @@ export const AuthProvider = ({ children }: { children: any }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, setUser, token, unit, setUnit, refreshUser: getUserData }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                setUser,
+                token,
+                setToken,
+                unit,
+                setUnit,
+                authLoading,
+                refreshUser: getUserData,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useUser = () => useContext(AuthContext)
+export const useUser = () => useContext(AuthContext);

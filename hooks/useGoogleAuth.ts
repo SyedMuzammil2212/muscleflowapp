@@ -27,6 +27,8 @@ function initGoogleSignin(): boolean {
         GoogleSignin?.configure({
             webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_ID!,
             iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_ID!,
+            offlineAccess: true,
+            scopes: ["profile", "email"],
         });
 
         isConfigured = true;
