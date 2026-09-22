@@ -57,7 +57,7 @@ export default function SessionCard({ session, latest = false, returnTo }: { ses
         : `/workoutdetails?mockSessionData=${sessionDataStr}`;
 
     return (
-        <Link href={targetUrl}>
+        <Link href={targetUrl as any}>
             <View className="w-full bg-card px-3 py-5 rounded-2xl border border-border-accent gap-y-2 items-start justify-start">
                 {latest ? <Text className="text-brand font-semibold text-xs"> LATEST SESSION </Text>
                     : <Text className="text-brand font-semibold text-xs"> {formatSessionDate(session?.session?.start_time)}</Text>

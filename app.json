@@ -7,12 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "muscleflowapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.muscleflowapp",
@@ -22,8 +16,14 @@
             "CFBundleURLSchemes": [
               "com.googleusercontent.apps.1068967662543-1hbblo4s2h1m5q7amr9kv9hng867j2ur"
             ]
+          },
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.1068967662543-1hbblo4s2h1m5q7amr9kv9hng867j2ur"
+            ]
           }
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -32,7 +32,6 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -45,7 +44,17 @@
       "expo-secure-store",
       "expo-web-browser",
       "@react-native-google-signin/google-signin",
-      "./plugins/withModularHeaders"
+      "./plugins/withModularHeaders",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true

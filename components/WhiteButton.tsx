@@ -7,7 +7,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-na
 type WhiteButtonProps = {
     text: string,
     onPress: () => void
-    marginStay: boolean
+    marginStay?: boolean
 }
 export default function WhiteButton({ text, onPress, marginStay = true }: WhiteButtonProps) {
     const scale = useSharedValue(1)

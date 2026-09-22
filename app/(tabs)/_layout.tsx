@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     width: "100%"
   },
   activeHighlight: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 100,
     backgroundColor: 'rgba(248, 198, 30, 0.12)',
     borderWidth: 1,
